@@ -1,0 +1,24 @@
+{
+  "name": "spartan-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "find-up": "^3.0.0",
+    "yargs": "^12.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oipwg/spartan-cli.git"
+  },
+  "author": "Anthony Howl",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oipwg/spartan-cli/issues"
+  },
+  "homepage": "https://github.com/oipwg/spartan-cli#readme"
+}
