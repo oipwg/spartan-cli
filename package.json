@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "spartanbot": "^0.1.0",
     "vorpal": "^1.12.0"
   },
   "devDependencies": {},
