@@ -7,7 +7,8 @@ let spartan_cli = Vorpal()
 let spartan = new SpartanBot();
 
 spartan_cli
-	.delimiter('spartan-cli$')
+	.delimiter(spartan_cli.chalk.magenta('spartan-cli$'))
 	.use(commands, {SpartanBot: spartan})
+	.history('spartancli-history')
 	 
 spartan_cli.show()
