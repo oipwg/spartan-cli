@@ -1,8 +1,9 @@
 import add from './add'
+import list from './list'
 import delete_ from './delete'
 
 // An array of all the supported commands
-const COMMANDS = [ add, delete_ ]
+const COMMANDS = [ add, list, delete_ ]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
