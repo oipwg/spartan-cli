@@ -1,7 +1,4 @@
-const Utils = require("../src/utils")
-
-const convertHumanTimeToSeconds = Utils.convertHumanTimeToSeconds
-const convertHumanHashrateToSeconds = Utils.convertHumanHashrateToSeconds
+import { convertHumanTimeToSeconds, convertHumanHashrateToMH } from "../src/utils"
 
 describe("Utils", () => {
 	describe("HumanTime to Seconds", () => {
@@ -84,37 +81,148 @@ describe("Utils", () => {
 			})
 		})
 	})
-})
 
-describe("Utils", () => {
-	describe("HumanHash to Seconds", () => {
-		describe("test parse mh", () => {
-			test("1m => 1", () => {
-				expect(convertHumanHashrateToSeconds("1 H/s")).toBe(1)
+	describe("Human Hashrate to Megahash", () => {
+		describe("Megahash", () => {
+			describe("lowercase no space", () => {
+				test("1m => 1", () => {
+					expect(convertHumanHashrateToMH("1m")).toBe(1)
+				})
+				test("2m => 2", () => {
+					expect(convertHumanHashrateToMH("2m")).toBe(2)
+				})
+				test("1mh => 1", () => {
+					expect(convertHumanHashrateToMH("1mh")).toBe(1)
+				})
+				test("2mh => 2", () => {
+					expect(convertHumanHashrateToMH("2mh")).toBe(2)
+				})
 			})
-			test("2m => 2", () => {
-				expect(convertHumanHashrateToSeconds("2 H/s")).toBe("2")
-			})
-			test("1 m => m", () => {
-				expect(convertHumanHashrateToSeconds("1 H/s")).toBe(1)
-			})
-			test("2 m => 2", () => {
-				expect(convertHumanHashrateToSeconds("2 H/s")).toBe(2)
-			})
-			test("1 m => 1", () => {
-				expect(convertHumanHashrateToSeconds("1 H/s")).toBe(1)
-			})
-			test("2 hours => 2", () => {
-				expect(convertHumanHashrateToSeconds("2 H/s")).toBe(2)
-			})
-			test("rando# mh => random# * 1", () => {
-				let hashes = parseInt(Math.random() * 10)
-				if (hashes <= 1)
-					hashes = 2
 
-				let hash_string = hashes + " M"
+			describe("lowercase space", () => {
+				test("1 m => 1", () => {
+					expect(convertHumanHashrateToMH("1 m")).toBe(1)
+				})
+				test("2 m => 2", () => {
+					expect(convertHumanHashrateToMH("2 m")).toBe(2)
+				})
+				test("1 mh => 1", () => {
+					expect(convertHumanHashrateToMH("1 mh")).toBe(1)
+				})
+				test("2 mh => 2", () => {
+					expect(convertHumanHashrateToMH("2 mh")).toBe(2)
+				})
+			})
 
-				expect(convertHumanHashrateToSeconds(hash_string)).toBe(hashes * 1)
+			describe("uppercase no space", () => {
+				test("1M => 1", () => {
+					expect(convertHumanHashrateToMH("1M")).toBe(1)
+				})
+				test("2M => 2", () => {
+					expect(convertHumanHashrateToMH("2M")).toBe(2)
+				})
+				test("1MH => 1", () => {
+					expect(convertHumanHashrateToMH("1MH")).toBe(1)
+				})
+				test("2MH => 2", () => {
+					expect(convertHumanHashrateToMH("2MH")).toBe(2)
+				})
+			})
+
+			describe("uppercase space", () => {
+				test("1 M => 1", () => {
+					expect(convertHumanHashrateToMH("1 M")).toBe(1)
+				})
+				test("2 M => 2", () => {
+					expect(convertHumanHashrateToMH("2 M")).toBe(2)
+				})
+				test("1 MH => 1", () => {
+					expect(convertHumanHashrateToMH("1 MH")).toBe(1)
+				})
+				test("2 MH => 2", () => {
+					expect(convertHumanHashrateToMH("2 MH")).toBe(2)
+				})
+			})
+
+			test("random# MH => random# * 1", () => {
+				let megahash = parseInt(Math.random() * 10)
+				if (megahash <= 1)
+					megahash = 2
+
+				let hash_string = megahash + " MH"
+
+				expect(convertHumanHashrateToMH(hash_string)).toBe(megahash * 1)
+			})
+		})
+		describe("Gigahash", () => {
+			describe("lowercase no space", () => {
+				test("1g => 1", () => {
+					expect(convertHumanHashrateToMH("1g")).toBe(1000)
+				})
+				test("2g => 2", () => {
+					expect(convertHumanHashrateToMH("2g")).toBe(2000)
+				})
+				test("1gh => 1", () => {
+					expect(convertHumanHashrateToMH("1gh")).toBe(1000)
+				})
+				test("2gh => 2", () => {
+					expect(convertHumanHashrateToMH("2gh")).toBe(2000)
+				})
+			})
+
+			describe("lowercase space", () => {
+				test("1 g => 1", () => {
+					expect(convertHumanHashrateToMH("1 g")).toBe(1000)
+				})
+				test("2 g => 2", () => {
+					expect(convertHumanHashrateToMH("2 g")).toBe(2000)
+				})
+				test("1 gh => 1", () => {
+					expect(convertHumanHashrateToMH("1 gh")).toBe(1000)
+				})
+				test("2 gh => 2", () => {
+					expect(convertHumanHashrateToMH("2 gh")).toBe(2000)
+				})
+			})
+
+			describe("uppercase no space", () => {
+				test("1G => 1", () => {
+					expect(convertHumanHashrateToMH("1G")).toBe(1000)
+				})
+				test("2G => 2", () => {
+					expect(convertHumanHashrateToMH("2G")).toBe(2000)
+				})
+				test("1GH => 1", () => {
+					expect(convertHumanHashrateToMH("1GH")).toBe(1000)
+				})
+				test("2GH => 2", () => {
+					expect(convertHumanHashrateToMH("2GH")).toBe(2000)
+				})
+			})
+
+			describe("uppercase space", () => {
+				test("1 G => 1", () => {
+					expect(convertHumanHashrateToMH("1 G")).toBe(1000)
+				})
+				test("2 G => 2", () => {
+					expect(convertHumanHashrateToMH("2 G")).toBe(2000)
+				})
+				test("1 GH => 1", () => {
+					expect(convertHumanHashrateToMH("1 GH")).toBe(1000)
+				})
+				test("2 GH => 2", () => {
+					expect(convertHumanHashrateToMH("2 GH")).toBe(2000)
+				})
+			})
+
+			test("random# GH => random# * 1", () => {
+				let gigahash = parseInt(Math.random() * 10)
+				if (gigahash <= 1)
+					gigahash = 2
+
+				let hash_string = gigahash + " GH"
+
+				expect(convertHumanHashrateToMH(hash_string)).toBe(gigahash * 1000)
 			})
 		})
 	})
