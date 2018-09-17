@@ -1,14 +1,12 @@
 const Hashrate = require('js-hashrate-parser');
+const timestring = require('timestring')
 
 function convertHumanTimeToSeconds(time) {
-    switch(time) {
-        
-
-    }
+    return timestring(time)
 }
 
 function convertHumanHashrateToSeconds(human_hashrate){
- Hashrate.toString(human_hashrate)
+    return Hashrate.parse(human_hashrate)
 }
 
 module.exports = {
