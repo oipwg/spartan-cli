@@ -1,7 +1,6 @@
 const vorpal = require('vorpal')();
 const { SpartanBot } = require('spartanbot')
-var bytes = require('bytes');
-
+const {convertHumanTimeToSeconds, convertHumanHashrateToSeconds} = require('./utils.js')
 let spartan = new SpartanBot();
 
 vorpal
@@ -26,9 +25,9 @@ vorpal
 
 		var answers = await this.prompt(questions);
 
-		hashrate = bytes(answers.hashrate);
-		duration = answers.duration;
-
+		hashrate = convertHumanHashrateToSeconds(answers.hashrate);
+		duration = convertHumanTimeToSeconds(answers.duration);
+		console.log(hashrate)
 		var rent_manual = await spartan.manualRental(hashrate, duration, async (prepurchase_info) => {
 			//self.log("prepurchase", prepurchase_info)
 			var confirm_purchase = await self.prompt({

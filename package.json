@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bytes": "^3.0.0",
+    "js-hashrate-parser": "0.0.5",
     "spartanbot": "^0.1.0",
     "vorpal": "^1.12.0"
   },
