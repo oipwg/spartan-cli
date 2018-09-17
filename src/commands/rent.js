@@ -1,3 +1,8 @@
+import {
+	convertHumanHashrateToMH,
+	convertHumanTimeToSeconds
+} from '../utils'
+
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
 
@@ -15,25 +20,25 @@ export default function(vorpal, options){
 			{
 				type: 'input',
 				name: 'duration',
-				default: '24h',
+				default: '1h',
 				message: 'How long would you like SpartanBot to run? '
 			}
 		];
 
 		var answers = await this.prompt(questions);
 
-		hashrate = convertHumanHashrateToSeconds(answers.hashrate);
-		duration = convertHumanTimeToSeconds(answers.duration);
-		console.log(hashrate)
-		var rent_manual = await spartan.manualRental(hashrate, duration, async (prepurchase_info) => {
-			//self.log("prepurchase", prepurchase_info)
+		console.log(answers)
+
+		let converted_hashrate = convertHumanHashrateToMH(answers.hashrate);
+		let converted_duration = convertHumanTimeToSeconds(answers.duration);
+		var rent_manual = await spartan.manualRental(converted_hashrate, converted_duration, async (prepurchase_info) => {
+			self.log("prepurchase", prepurchase_info)
 			var confirm_purchase = await self.prompt({
 				type: 'confirm',
 				name: 'confirm',
 				message: 'Do you want to rent 13 miners for $' + prepurchase_info.total_cost.toFixed(2) + '?'
 			})
-
-			return confirm_purchase
+			return confirm_purchase 
 		})
 
 		self.log("rental status: ", rent_manual)
