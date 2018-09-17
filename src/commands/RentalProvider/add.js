@@ -35,7 +35,11 @@ export default function(vorpal, options){
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
 			} else {
-				this.log(setup_success)
+				if (setup_success.message === "Provider Authorization Failed"){
+					this.log(vorpal.chalk.red("Unable to login to Account using API Key & API Secret, please check your keys and try again"))
+				} else {
+					this.log(vorpal.chalk.red(setup_success))
+				}
 			}
 		} catch (e) {
 			this.log(vorpal.chalk.red("Error! Unable to add Rental Provider!\n" + e))
