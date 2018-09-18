@@ -25,6 +25,8 @@ export default function(vorpal, options){
 			}
 		])
 
+
+
 		try {
 			let setup_success = await spartan.setupRentalProvider({
 				type: rental_provider_type,
@@ -34,11 +36,13 @@ export default function(vorpal, options){
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
-			} else {
-				if (setup_success.message === "Provider Authorization Failed"){
+			}  else  {
+				if(setup_success.message === "settings.api_key is required!"){
+					this.log(vorpal.chalk.red("You must input an API Key!"))
+				} else if (setup_success.message === "settings.api_secret is required!"){
+					this.log(vorpal.chalk.red("You must input an API Secret!"))
+				} else if (setup_success.message === "Provider Authorization Failed"){
 					this.log(vorpal.chalk.red("Unable to login to Account using API Key & API Secret, please check your keys and try again"))
-				} else {
-					this.log(vorpal.chalk.red(setup_success))
 				}
 			}
 		} catch (e) {
