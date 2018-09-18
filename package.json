@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "spartanbot": "^0.3.8",
+    "spartanbot": "^0.3.9",
     "timestring": "^5.0.1",
     "vorpal": "^1.12.0"
   },
