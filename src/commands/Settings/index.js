@@ -1,10 +1,7 @@
-// Import each command
-import Rent from './rent'
-import RentalProvider from './RentalProvider'
-import Settings from './Settings'
+import settings from './settings'
 
 // An array of all the supported commands
-const COMMANDS = [ Rent, RentalProvider, Settings ]
+const COMMANDS = [ settings ]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
