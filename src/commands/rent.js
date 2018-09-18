@@ -15,13 +15,13 @@ export default function(vorpal, options){
 				type: 'input',
 				name: 'hashrate',
 				default: '5G',
-				message: 'How much Hashrate would you like to rent? '
+				message: vorpal.chalk.yellow('How much Hashrate would you like? ')
 			},
 			{
 				type: 'input',
 				name: 'duration',
 				default: '1h',
-				message: 'How long would you like SpartanBot to run? '
+				message: vorpal.chalk.yellow('How long would you like to rent your miner? ')
 			}
 		];
 
@@ -36,7 +36,7 @@ export default function(vorpal, options){
 			var confirm_purchase = await self.prompt({
 				type: 'confirm',
 				name: 'confirm',
-				message: 'Do you want to rent 13 miners for $' + prepurchase_info.total_cost.toFixed(2) + '?'
+				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miners for $' + prepurchase_info.total_cost.toFixed(2) + '?')
 			})
 			return confirm_purchase 
 		})
