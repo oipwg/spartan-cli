@@ -7,15 +7,15 @@ export default function(vorpal, options){
         let settings = spartan.getSettings()
 
         for (let setting in settings){
-            // let add_string = vorpal.chalk.cyan(settings[setting])
-            if (settings[setting] === true){
-                this.log(vorpal.chalk.magenta(setting) + ": " + vorpal.chalk.green(settings[setting]))
+            let add_string = vorpal.chalk.cyan(settings[setting])
 
-            } else if (settings[setting] === false){
-                this.log(vorpal.chalk.magenta(setting) + ": " + vorpal.chalk.red(settings[setting]))
+            if (settings[setting] === true)
+                add_string = vorpal.chalk.green(settings[setting])
+            else if (settings[setting] === false)
+                add_string = vorpal.chalk.red(settings[setting])
+            
 
-            } else if (settings[setting])
-            this.log(vorpal.chalk.magenta(setting) + ": " + vorpal.chalk.cyan(settings[setting]))
+            this.log(vorpal.chalk.bgBlack(setting) + ": " + add_string)
             
         }
     })
