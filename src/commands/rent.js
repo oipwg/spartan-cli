@@ -10,6 +10,13 @@ export default function(vorpal, options){
 	.command('rent')
 	.action(async function (args, cb) {
 		const self = this;
+
+		let rental_providers = spartan.getRentalProviders()
+
+		if (rental_providers.length === 0){
+			return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
+		}
+
 		let questions = [
 			{
 				type: 'input',
@@ -32,6 +39,8 @@ export default function(vorpal, options){
 
 		self.log(vorpal.chalk.cyan("Searching for miners..."))
 
+		let rental_aborted = false
+
 		var rent_manual = await spartan.manualRental(converted_hashrate, converted_duration, async (prepurchase_info) => {
 			var confirm_purchase = await self.prompt({
 				type: 'confirm',
@@ -42,16 +51,18 @@ export default function(vorpal, options){
 			if (confirm_purchase.confirm){
 				self.log(vorpal.chalk.cyan("Renting miners..."))
 			} else {
+				rental_aborted = true
 				this.log(vorpal.chalk.red("Rental was aborted"))
 			}
 
 			return confirm_purchase.confirm
 		})
 
-		if (rent_manual.success){
+		if (rent_manual.success && !rental_aborted){
 			self.log(vorpal.chalk.green(`Successfully rented ${rent_manual.total_rigs_rented} miner(s) (${(rent_manual.total_hashrate/1000).toFixed(2)} GH) for $${rent_manual.total_cost}!`))
 		} else {
-			return this.log(vorpal.chalk.red("Unable to rent Miners! " + rent_manual))
+			if (!rental_aborted)
+				return this.log(vorpal.chalk.red("Unable to rent Miners! " + JSON.stringify(rent_manual)))
 		}
 	});
 }
