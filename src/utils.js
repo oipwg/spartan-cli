@@ -24,7 +24,7 @@ export function convertHumanHashrateToMH(human_hashrate){
 		}
 	]
 
-	let number_value = parseFloat(human_hashrate.match(/[1-9]+/)[0])
+	let number_value = parseFloat(human_hashrate.match(/[0-9]+/)[0])
 	let symbol_value = human_hashrate.match(/[a-zA-Z]+/)[0]
 
 	for (let symbol of UNIT_SYMBOLS){

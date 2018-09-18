@@ -97,6 +97,9 @@ describe("Utils", () => {
 				test("2mh => 2", () => {
 					expect(convertHumanHashrateToMH("2mh")).toBe(2)
 				})
+				test("20mh => 20", () => {
+					expect(convertHumanHashrateToMH("20mh")).toBe(20)
+				})
 			})
 
 			describe("lowercase space", () => {
@@ -212,6 +215,9 @@ describe("Utils", () => {
 				})
 				test("2 GH => 2", () => {
 					expect(convertHumanHashrateToMH("2 GH")).toBe(2000)
+				})
+				test("20 GH => 20", () => {
+					expect(convertHumanHashrateToMH("20 GH")).toBe(20000)
 				})
 			})
 
