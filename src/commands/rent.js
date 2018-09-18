@@ -38,9 +38,13 @@ export default function(vorpal, options){
 				name: 'confirm',
 				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miners for $' + prepurchase_info.total_cost.toFixed(2) + '?')
 			})
-			return confirm_purchase 
-		})
-
-		self.log("rental status: ", rent_manual)
+			if (confirm_purchase.confirm){
+				return self.log(vorpal.chalk.green("rental status: ", rent_manual.info + " !"))
+				} else {
+					this.log(vorpal.chalk.red(" Rental was aborted"))
+				}
+		
+		
+			})
 	});
 }
