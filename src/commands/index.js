@@ -2,9 +2,10 @@
 import Rent from './rent'
 import RentalProvider from './RentalProvider'
 import Settings from './Settings'
+import Wallet from './Wallet'
 
 // An array of all the supported commands
-const COMMANDS = [ Rent, RentalProvider, Settings ]
+const COMMANDS = [ Rent, RentalProvider, Settings, Wallet ]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
