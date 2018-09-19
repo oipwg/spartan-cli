@@ -5,7 +5,7 @@ export default function(vorpal, options){
     vorpal
 	.command('settings modify')
 	.action(async function(args) {
-        let list = spartan.getSettings()
+
 
         let modified_setting = await this.prompt([
             {

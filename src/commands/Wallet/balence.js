@@ -4,5 +4,10 @@ export default function(vorpal, options){
     vorpal
 	.command('wallet balence')
 	.action(async function(args) {
-        return
+        this.log(vorpal.chalk.cyan("Updating wallet balance..."))
+
+        let balance = await spartan.getWalletBalance()
+
+        this.log(balance.flo)
+        
     })}
