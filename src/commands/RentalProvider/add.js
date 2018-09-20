@@ -1,5 +1,5 @@
 export default function(vorpal, options){
-	let spartan = options.SpartanBot
+	let spartan = options.SpartanBot;
 
 	vorpal
 	.command('rentalprovider add')
@@ -11,7 +11,7 @@ export default function(vorpal, options){
 			choices: spartan.getSupportedRentalProviders()
 		});
 
-		let rental_provider_type = select_provider_answers.rental_provider
+		let rental_provider_type = select_provider_answers.name;
 		
 		let api_answers = await this.prompt([
 			{
@@ -23,16 +23,19 @@ export default function(vorpal, options){
 				name: "api_secret",
 				message: vorpal.chalk.yellow("Please enter your API Secret: ")
 			}
-		])
+		]);
 
-
+		let provider_name = await this.prompt({
+			type: "input",
+			name: "name",
+		})
 
 		try {
 			let setup_success = await spartan.setupRentalProvider({
 				type: rental_provider_type,
 				api_key: api_answers.api_key,
 				api_secret: api_answers.api_secret
-			})
+			});
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
