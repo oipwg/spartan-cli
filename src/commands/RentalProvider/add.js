@@ -124,14 +124,18 @@ export default function(vorpal, options){
 
 					//if user has no pools, prompt to create one
 					if (setup_success.pools.length === 0) {
-						self.log(vorpal.chalk.red("0 pools found, create a pool!\n"));
+						self.log(vorpal.chalk.yellow("0 pools found, create a pool!\n"));
 						let poolData;
 						try {
-							let poolData = await setup_success.provider.createPool(await poolOpts());
+							poolData = await setup_success.provider.createPool(await poolOpts());
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
-						//@ToDO: Do something with poolData
+						if (poolData.success) {
+							setup_success.provider.setActivePoolID(poolData.profileID)
+						}
+						spartan.serialize();
+						self.log(vorpal.chalk.yellow(`Pool successfully added`))
 					} else {
 						let choice = await this.prompt({
 							type: 'list',
@@ -172,16 +176,15 @@ export default function(vorpal, options){
 						if (choice.poolChoice  === 'create') {
 							let poolData;
 							try {
-								let poolOptions = await poolOpts();
-								this.log(poolOptions);
-								let poolData = await setup_success.provider.createPool(poolOptions);
+								poolData = await setup_success.provider.createPool(await poolOpts());
 							} catch (err) {
 								self.log(`Error creating pool: \n ${err}`)
 							}
-							// if (poolData && poolData.success) {
-							// 	self.log(vorpal.chalk.yellow(`Pool data! \n ${JSON.stringify(poolData, null, 4)}`))
-							// }
-							//@ToDO: Do something with poolData
+							if (poolData.success) {
+								setup_success.provider.setActivePoolID(poolData.profileID)
+							}
+							spartan.serialize();
+							self.log(vorpal.chalk.yellow(`Pool successfully added`))
 						}
  					}
 				}
