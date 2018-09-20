@@ -1,6 +1,6 @@
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
-
+	console.log(spartan)
 	vorpal
 	.command('rentalprovider add')
 	.action(async function(args) {
@@ -25,17 +25,25 @@ export default function(vorpal, options){
 			}
 		])
 
-
-
 		try {
 			let setup_success = await spartan.setupRentalProvider({
 				type: rental_provider_type,
 				api_key: api_answers.api_key,
 				api_secret: api_answers.api_secret
 			})
-
+			console.log(spartan)
 			if (setup_success.success){
+				let pool_setup = await this.prompt({
+					type: "list",
+					name:"pools",
+					message: "select your pool",
+					choices: Object.keys(spartan.rental_providers.MRRProvider[uid].getPools())
+				})
+			}
+
+			if (pool_setup.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
+				console.log(spartan)
 			}  else  {
 				if(setup_success.message === "settings.api_key is required!"){
 					this.log(vorpal.chalk.red("You must input an API Key!"))

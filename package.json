@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "spartanbot": "^0.4.1",
+    "spartanbot": "https://github.com/oipwg/spartanbot.git",
     "timestring": "^5.0.1",
     "vorpal": "^1.12.0"
   },
