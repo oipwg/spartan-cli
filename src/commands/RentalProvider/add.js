@@ -1,9 +1,13 @@
 export default function(vorpal, options){
+
 	let spartan = options.SpartanBot;
 
 	vorpal
 	.command('rentalprovider add')
+	.description('Add a rental provider to Spartan Bot')
+	.alias('rp add')
 	.action(async function(args) {
+		const self = this;
 		let select_provider_answers = await this.prompt({
 			type: 'list',
 			name: 'rental_provider',
@@ -11,8 +15,8 @@ export default function(vorpal, options){
 			choices: spartan.getSupportedRentalProviders()
 		});
 
-		let rental_provider_type = select_provider_answers.name;
-		
+		let rental_provider_type = select_provider_answers.rental_provider;
+
 		let api_answers = await this.prompt([
 			{
 				type: "input",
@@ -28,17 +32,29 @@ export default function(vorpal, options){
 		let provider_name = await this.prompt({
 			type: "input",
 			name: "name",
-		})
+			message: vorpal.chalk.yellow("Add an optional name to your rental provider: "),
+			default: undefined
+		});
 
 		try {
 			let setup_success = await spartan.setupRentalProvider({
 				type: rental_provider_type,
 				api_key: api_answers.api_key,
-				api_secret: api_answers.api_secret
+				api_secret: api_answers.api_secret,
+				name: provider_name.name
 			});
+			self.log(setup_success);
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
+				// let pool_setup = await this.prompt({
+				// 	type: "list",
+				// 	name:"pools",
+				// 	message: "select your pool",
+				// 	choices: Object.keys(spartan.rental_providers[0].getPools())
+				// })
+
+				// self.log(spartan)
 			}  else  {
 				if(setup_success.message === "settings.api_key is required!"){
 					this.log(vorpal.chalk.red("You must input an API Key!"))
