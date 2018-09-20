@@ -21,11 +21,15 @@ export default function(vorpal, options){
 			{
 				type: "input",
 				name: "api_key",
-				message: vorpal.chalk.yellow("Please enter your API Key: ")
+				message: vorpal.chalk.yellow("Please enter your API Key: "),
+				//ToDo: Delete
+				default: '6640765434bf0eb064f2b984c800718ca168f2801e67190ab3ed1f40b57e7425'
 			},{
 				type: "input",
 				name: "api_secret",
-				message: vorpal.chalk.yellow("Please enter your API Secret: ")
+				message: vorpal.chalk.yellow("Please enter your API Secret: "),
+				//ToDo: Delete
+				default: '69f7545a8ca0e029c5eba8740c16feaba8904f81ec7f629b4470c0d69071e392'
 			}
 		]);
 
@@ -49,8 +53,9 @@ export default function(vorpal, options){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
 				if (setup_success.type === 'MiningRigRentals') {
 
+					// ------------------------prompt function---------------------------------
 					let poolOpts = async () => {
-						let poolOptions = {}
+						let poolOptions = {};
 						let profileName = await this.prompt({
 							type: 'input',
 							name: 'profileName',
@@ -122,10 +127,7 @@ export default function(vorpal, options){
 						self.log(vorpal.chalk.red("0 pools found, create a pool!\n"));
 						let poolData;
 						try {
-							let response = await setup_success.provider.createPool(await poolOpts());
-							if (response.success) {
-								poolData = response.data
-							}
+							let poolData = await setup_success.provider.createPool(await poolOpts());
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
@@ -167,16 +169,18 @@ export default function(vorpal, options){
 							self.log(setup_success.provider)
 						}
 
-						if (choice === 'create') {
+						if (choice.poolChoice  === 'create') {
 							let poolData;
 							try {
-								let response = await setup_success.provider.createPool(await poolOpts());
-								if (response.success) {
-									poolData = response.data
-								}
+								let poolOptions = await poolOpts();
+								this.log(poolOptions);
+								let poolData = await setup_success.provider.createPool(poolOptions);
 							} catch (err) {
 								self.log(`Error creating pool: \n ${err}`)
 							}
+							// if (poolData && poolData.success) {
+							// 	self.log(vorpal.chalk.yellow(`Pool data! \n ${JSON.stringify(poolData, null, 4)}`))
+							// }
 							//@ToDO: Do something with poolData
 						}
  					}
