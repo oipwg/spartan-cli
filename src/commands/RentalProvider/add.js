@@ -46,15 +46,142 @@ export default function(vorpal, options){
 			self.log(setup_success);
 
 			if (setup_success.success){
-				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"))
-				// let pool_setup = await this.prompt({
-				// 	type: "list",
-				// 	name:"pools",
-				// 	message: "select your pool",
-				// 	choices: Object.keys(spartan.rental_providers[0].getPools())
-				// })
+				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
+				if (setup_success.type === 'MiningRigRentals') {
 
-				// self.log(spartan)
+					let poolOpts = async () => {
+						let poolOptions = {}
+						let profileName = await this.prompt({
+							type: 'input',
+							name: 'profileName',
+							message: vorpal.chalk.yellow('Input a pool profile name: ')
+						});
+						poolOptions.profileName = profileName.profileName;
+
+						let algo = await this.prompt({
+							type: 'input',
+							name: 'algo',
+							message: vorpal.chalk.yellow('Input an algorithm to mine with (scrypt, x11, sha256, etc...) : '),
+							default: 'scrypt'
+						});
+						poolOptions.algo = algo.algo;
+
+						let host = await this.prompt({
+							type: 'input',
+							name: 'host',
+							message: vorpal.chalk.yellow('Input a host url: '),
+							default: 'snowflake.oip.fun'
+						});
+						poolOptions.host = host.host;
+
+						let port = await this.prompt({
+							type: 'input',
+							name: 'port',
+							message: vorpal.chalk.yellow('Input a port to mine on: '),
+							default: 8080
+						});
+						poolOptions.port = port.port;
+
+						let user = await this.prompt({
+							type: 'input',
+							name: 'user',
+							message: vorpal.chalk.yellow('Input a wallet address to receive funds at: '),
+							description: 'Your workname'
+						});
+						poolOptions.user = user.user;
+
+						let priority = await this.prompt({
+							type: 'list',
+							name: 'priority',
+							message: vorpal.chalk.yellow('What priority would you like this pool to be at?: '),
+							choices: ['0', '1', '2', '3', '4']
+						});
+						poolOptions.priority = priority.priority;
+
+						let pass = await this.prompt({
+							type: 'input',
+							name: 'pass',
+							message: vorpal.chalk.yellow('Optionally add a password to the pool profile: '),
+							default: undefined
+						});
+						poolOptions.notes = pass.pass;
+
+						let notes = await this.prompt({
+							type: 'input',
+							name: 'notes',
+							message: vorpal.chalk.yellow('Optionally add additional notes to the pool profile: '),
+							default: undefined
+						});
+						poolOptions.notes = notes.notes;
+
+						return poolOptions
+					};
+
+					//if user has no pools, prompt to create one
+					if (setup_success.pools.length === 0) {
+						self.log(vorpal.chalk.red("0 pools found, create a pool!\n"));
+						let poolData;
+						try {
+							let response = await setup_success.provider.createPool(await poolOpts());
+							if (response.success) {
+								poolData = response.data
+							}
+						} catch (err) {
+							self.log(`Error creating pool: \n ${err}`)
+						}
+						//@ToDO: Do something with poolData
+					} else {
+						let choice = await this.prompt({
+							type: 'list',
+							name: 'poolChoice',
+							message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool?"),
+							choices: ['add', 'create']
+						});
+
+						if (choice.poolChoice === 'add') {
+							self.log('choice was add')
+							let pools = setup_success.pools;
+							let poolArray = [];
+							let poolIDs = [];
+							for (let pool of pools) {
+								poolArray.push(`Name: ${pool.name} - ID: ${pool.id}`)
+								poolIDs.push(pool.id)
+							}
+							let poolToAdd = await this.prompt({
+								type: 'list',
+								name: 'poolChoice',
+								message: vorpal.chalk.yellow("Would you like to create a new pool or add an existing pool?"),
+								choices: poolArray
+							});
+
+							for (let id of poolIDs) {
+								if (poolToAdd.poolChoice.includes(id)) {
+									setup_success.provider.setActivePoolID(id)
+									for (let pool of pools) {
+										if (pool.id = id) {
+											setup_success.provider.addPools(pool)
+										}
+									}
+								}
+							}
+							self.log(setup_success.provider)
+						}
+
+						if (choice === 'create') {
+							let poolData;
+							try {
+								let response = await setup_success.provider.createPool(await poolOpts());
+								if (response.success) {
+									poolData = response.data
+								}
+							} catch (err) {
+								self.log(`Error creating pool: \n ${err}`)
+							}
+							//@ToDO: Do something with poolData
+						}
+ 					}
+				}
+				// self.log(setup_success.success)
 			}  else  {
 				if(setup_success.message === "settings.api_key is required!"){
 					this.log(vorpal.chalk.red("You must input an API Key!"))
