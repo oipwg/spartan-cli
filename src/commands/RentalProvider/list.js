@@ -3,6 +3,7 @@ export default function(vorpal, options){
 
 	vorpal
 	.command('rentalprovider list')
+	.alias('rp list')
 	.action(async function(args) {
 		let rental_providers = spartan.getRentalProviders()
 

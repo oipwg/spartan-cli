@@ -3,6 +3,7 @@ export default function(vorpal, options){
 
 	vorpal
 	.command('rentalprovider delete')
+	.alias('rp delete')
 	.action(async function(args) {
 		let rental_providers = spartan.getRentalProviders()
 
