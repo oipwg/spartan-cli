@@ -1,8 +1,8 @@
 export default function(vorpal, options){
-    let spartan = options.SpartanBot
+    let spartan = options.SpartanBot;
     
     vorpal
 	.command('wallet withdraw')
 	.action(async function(args) {
-        return
+		this.log("This functionality does not exist yet");
     })}

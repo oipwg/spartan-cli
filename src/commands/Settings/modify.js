@@ -5,8 +5,6 @@ export default function(vorpal, options){
     vorpal
 	.command('settings modify')
 	.action(async function(args) {
-
-
         let modified_setting = await this.prompt([
             {
                 type:'list',

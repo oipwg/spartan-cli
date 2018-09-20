@@ -1,8 +1,8 @@
 import withdraw from './withdraw'
-import balence from './balence'
+import balance from './balance'
 
 // An array of all the supported commands
-const COMMANDS = [ balence , withdraw ]
+const COMMANDS = [ balance , withdraw ]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
