@@ -3,6 +3,8 @@ export default function(vorpal, options){
     
     vorpal
 	.command('wallet balance')
+	.alias('wallet b')
+	.description('check the balance of your wallets')
 	.action(async function(args) {
 		this.log(vorpal.chalk.cyan("Updating wallet balance..."))
 		

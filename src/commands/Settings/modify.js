@@ -3,7 +3,9 @@ export default function(vorpal, options){
     let spartan = options.SpartanBot
     
     vorpal
-	.command('settings modify')
+    .command('settings modify')
+    .description('Edit the settings that are set')
+    .alias('s modify')
 	.action(async function(args) {
         let modified_setting = await this.prompt([
             {

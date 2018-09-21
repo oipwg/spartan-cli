@@ -2,7 +2,9 @@ export default function(vorpal, options){
     let spartan = options.SpartanBot
     
     vorpal
-	.command('settings list')
+    .command('settings list')
+    .description('listing of all settings that have been set')
+    .alias('s list')
 	.action(async function(args) {
         let settings = spartan.getSettings()
 

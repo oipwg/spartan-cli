@@ -8,6 +8,7 @@ export default function(vorpal, options){
 
 	vorpal
 	.command('rent')
+	.description('Manually rent a miner')
 	.action(async function (args, cb) {
 		const self = this;
 
@@ -42,11 +43,12 @@ export default function(vorpal, options){
 		let rental_aborted = false
 
 		var rent_manual = await spartan.manualRental(converted_hashrate, converted_duration, async (prepurchase_info) => {
+			this.log(prepurchase_info)
 			var confirm_purchase = await self.prompt({
 				type: 'confirm',
 				name: 'confirm',
 				default: false,
-				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miner(s) (' + (prepurchase_info.total_hashrate/1000).toFixed(2) + ' GH) for $' + prepurchase_info.total_cost + '?')
+				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.rigs + ' miner(s) (' + (prepurchase_info.total_hashrate/1000).toFixed(2) + ' GH) for $' + prepurchase_info.total_cost + '?')
 			})
 			if (confirm_purchase.confirm){
 				self.log(vorpal.chalk.cyan("Renting miners..."))
@@ -60,6 +62,7 @@ export default function(vorpal, options){
 
 		if (rent_manual.success && !rental_aborted){
 			self.log(vorpal.chalk.green(`Successfully rented ${rent_manual.total_rigs_rented} miner(s) (${(rent_manual.total_hashrate/1000).toFixed(2)} GH) for $${rent_manual.total_cost}!`))
+
 		} else {
 			if (!rental_aborted)
 				return this.log(vorpal.chalk.red("Unable to rent Miners! " + JSON.stringify(rent_manual)))
