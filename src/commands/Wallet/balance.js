@@ -8,7 +8,7 @@ export default function(vorpal, options){
 	.action(async function(args) {
 		this.log(vorpal.chalk.cyan("Updating wallet balance..."))
 		
-		let balance = await spartan.getWalletBalance()
+		let balance = await spartan.getWalletBalance(true)
 
 		this.log(balance)
 	})
