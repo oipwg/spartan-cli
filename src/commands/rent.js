@@ -52,7 +52,7 @@ export default function(vorpal, options){
 				type: 'confirm',
 				name: 'confirm',
 				default: false,
-				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miner(s) (' + (prepurchase_info.total_hashrate/1000).toFixed(2) + ' GH) for $' + prepurchase_info.total_cost + '?')
+				message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miner(s) (' + (prepurchase_info.hashrate_to_rent/1000).toFixed(2) + ' GH) for $' + prepurchase_info.cost_to_rent + '?')
 			})
 			if (confirm_purchase.confirm){
 				self.log(vorpal.chalk.cyan("Renting miners..."))
