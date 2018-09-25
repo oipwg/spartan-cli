@@ -42,10 +42,11 @@ export default function(vorpal, options){
 					default: 0
 				});
 				let chain_number = await self.prompt({
-					type: 'input',
+					type: 'list',
 					name: 'index',
-					message: vorpal.chalk.yellow('Type the index of the chain you want to search on: '),
-					default: 0
+					message: vorpal.chalk.yellow('Which chain index do you want to search on: '),
+					default: 0,
+					choices: ['0', '1']
 				});
 				let address_number = await self.prompt({
 					type: 'input',
@@ -58,7 +59,7 @@ export default function(vorpal, options){
 				let chain = chain_number.index;
 				let address = address_number.index;
 
-				let _address = _Coin.getAddress(account, chain, address).getPublicAddress()
+				let _address = _Coin.getAddress(Number(account), Number(chain), Number(address)).getPublicAddress()
 
 				self.log(vorpal.chalk.green(`Address: ${_address}`))
 
