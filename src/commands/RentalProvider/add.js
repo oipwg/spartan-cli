@@ -1,3 +1,6 @@
+import { config } from 'dotenv'
+config()
+
 export default function(vorpal, options){
 
 	let spartan = options.SpartanBot;
@@ -22,14 +25,12 @@ export default function(vorpal, options){
 				type: "input",
 				name: "api_key",
 				message: vorpal.chalk.yellow("Please enter your API Key: "),
-				//ToDo: Delete
-				default: '6640765434bf0eb064f2b984c800718ca168f2801e67190ab3ed1f40b57e7425'
+				default: process.env.API_KEY
 			},{
 				type: "input",
 				name: "api_secret",
 				message: vorpal.chalk.yellow("Please enter your API Secret: "),
-				//ToDo: Delete
-				default: '69f7545a8ca0e029c5eba8740c16feaba8904f81ec7f629b4470c0d69071e392'
+				default: process.env.API_SECRET
 			}
 		]);
 
