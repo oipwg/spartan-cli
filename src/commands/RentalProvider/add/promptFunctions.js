@@ -50,7 +50,7 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 	});
 }
 
-export const Prompt_CreatePool = async (self, vorpal) => {
+export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 	let poolOptions = {};
 	let profileName = await self.prompt({
 		type: 'input',
@@ -79,7 +79,7 @@ export const Prompt_CreatePool = async (self, vorpal) => {
 		type: 'input',
 		name: 'port',
 		message: vorpal.chalk.yellow('Input a port to mine on: '),
-		default: 8080
+		default: 3043
 	});
 	poolOptions.port = port.port;
 
