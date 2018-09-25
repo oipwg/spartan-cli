@@ -1,13 +1,23 @@
-export const PromptCreatePool = async () => {
+export const PromptRentalProviders = async (self, vorpal, spartan) => {
+	return await self.prompt({
+		type: 'list',
+		name: 'rental_provider',
+		message: vorpal.chalk.yellow('What kind of Rental Provider would you like to add?'),
+		choices: spartan.getSupportedRentalProviders()
+	});
+};
+
+
+export const PromptCreatePool = async (self, vorpal) => {
 	let poolOptions = {};
-	let profileName = await this.prompt({
+	let profileName = await self.prompt({
 		type: 'input',
 		name: 'profileName',
 		message: vorpal.chalk.yellow('Input a pool profile name: ')
 	});
 	poolOptions.profileName = profileName.profileName;
 
-	let algo = await this.prompt({
+	let algo = await self.prompt({
 		type: 'input',
 		name: 'algo',
 		message: vorpal.chalk.yellow('Input an algorithm to mine with (scrypt, x11, sha256, etc...) : '),
@@ -15,7 +25,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.algo = algo.algo;
 
-	let host = await this.prompt({
+	let host = await self.prompt({
 		type: 'input',
 		name: 'host',
 		message: vorpal.chalk.yellow('Input a host url: '),
@@ -23,7 +33,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.host = host.host;
 
-	let port = await this.prompt({
+	let port = await self.prompt({
 		type: 'input',
 		name: 'port',
 		message: vorpal.chalk.yellow('Input a port to mine on: '),
@@ -31,7 +41,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.port = port.port;
 
-	let user = await this.prompt({
+	let user = await self.prompt({
 		type: 'input',
 		name: 'user',
 		message: vorpal.chalk.yellow('Input a wallet address to receive funds at: '),
@@ -39,7 +49,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.user = user.user;
 
-	let priority = await this.prompt({
+	let priority = await self.prompt({
 		type: 'list',
 		name: 'priority',
 		message: vorpal.chalk.yellow('What priority would you like this pool to be at?: '),
@@ -47,7 +57,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.priority = priority.priority;
 
-	let pass = await this.prompt({
+	let pass = await self.prompt({
 		type: 'input',
 		name: 'pass',
 		message: vorpal.chalk.yellow('Optionally add a password to the pool profile: '),
@@ -55,7 +65,7 @@ export const PromptCreatePool = async () => {
 	});
 	poolOptions.notes = pass.pass;
 
-	let notes = await this.prompt({
+	let notes = await self.prompt({
 		type: 'input',
 		name: 'notes',
 		message: vorpal.chalk.yellow('Optionally add additional notes to the pool profile: '),

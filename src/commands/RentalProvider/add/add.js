@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 config()
 
-import {PromptCreatePool } from "./promptFunctions";
+import {PromptCreatePool, PromptRentalProviders } from "./promptFunctions";
 
 export default function(vorpal, options){
 
@@ -14,14 +14,9 @@ export default function(vorpal, options){
 	.action(async function(args) {
 		const self = this;
 
-		let select_provider_answers = await this.prompt({
-			type: 'list',
-			name: 'rental_provider',
-			message: vorpal.chalk.yellow('What kind of Rental Provider would you like to add?'),
-			choices: spartan.getSupportedRentalProviders()
-		});
+		let select_rental_providers = await PromptRentalProviders(self, vorpal, spartan)
 
-		let rental_provider_type = select_provider_answers.rental_provider;
+		let rental_provider_type = select_rental_providers.rental_provider;
 
 		let api_answers = await this.prompt([
 			{
@@ -63,7 +58,7 @@ export default function(vorpal, options){
 						self.log(vorpal.chalk.yellow("0 pools found, create a pool!\n"));
 						let poolData;
 						try {
-							poolData = await setup_success.provider.createPool(await PromptCreatePool());
+							poolData = await setup_success.provider.createPool(await PromptCreatePool(self, vorpal, spartan));
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
@@ -112,7 +107,7 @@ export default function(vorpal, options){
 						if (choice.poolChoice  === 'create') {
 							let poolData;
 							try {
-								poolData = await setup_success.provider.createPool(await PromptCreatePool());
+								poolData = await setup_success.provider.createPool(await PromptCreatePool(self, vorpal, spartan));
 							} catch (err) {
 								self.log(`Error creating pool: \n ${err}`)
 							}
