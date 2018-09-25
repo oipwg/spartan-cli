@@ -61,7 +61,7 @@ export default function(vorpal, options){
 
 						if (addOrCreatePool.option === 'add') {
 							self.log('Add pool');
-							
+
 							let pools = setup_success.pools;
 							let poolArray = [];
 							let poolIDs = [];
