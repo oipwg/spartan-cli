@@ -37,7 +37,7 @@ export default function(vorpal, options){
 			type: "confirm",
 			name: "confirm",
 			message: vorpal.chalk.yellow("Are you sure you wish to delete `" + rental_provider_to_delete + "`?"),
-			default: false
+			default: true
 		})
 
 		if (confirm_answer.confirm){
