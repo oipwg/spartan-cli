@@ -45,7 +45,7 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 	return await self.prompt({
 		type: 'list',
 		name: 'option',
-		message: vorpal.chalk.yellow("Would you like to create a new pool or add an existing pool?"),
+		message: vorpal.chalk.yellow("Please choose a pool"),
 		choices: poolArray
 	});
 }
