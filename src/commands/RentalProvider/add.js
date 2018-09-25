@@ -1,6 +1,8 @@
 import { config } from 'dotenv'
 config()
 
+import {PromptCreatePool } from "./add/promptFunctions";
+
 export default function(vorpal, options){
 
 	let spartan = options.SpartanBot;
@@ -11,6 +13,7 @@ export default function(vorpal, options){
 	.alias('rp add')
 	.action(async function(args) {
 		const self = this;
+
 		let select_provider_answers = await this.prompt({
 			type: 'list',
 			name: 'rental_provider',
@@ -38,7 +41,7 @@ export default function(vorpal, options){
 			type: "input",
 			name: "name",
 			message: vorpal.chalk.yellow("Add an optional name to your rental provider: "),
-			default: undefined
+			default: 'undefined'
 		});
 
 		try {
@@ -46,89 +49,21 @@ export default function(vorpal, options){
 				type: rental_provider_type,
 				api_key: api_answers.api_key,
 				api_secret: api_answers.api_secret,
-				name: provider_name.name
+				name: provider_name.name === 'undefined' ? undefined : provider_name.name
 			});
-			self.log(setup_success);
+
+			this.log(vorpal.chalk.green('Setup success: \n',setup_success));
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
 				if (setup_success.type === 'MiningRigRentals') {
-
-					// ------------------------prompt function---------------------------------
-					let poolOpts = async () => {
-						let poolOptions = {};
-						let profileName = await this.prompt({
-							type: 'input',
-							name: 'profileName',
-							message: vorpal.chalk.yellow('Input a pool profile name: ')
-						});
-						poolOptions.profileName = profileName.profileName;
-
-						let algo = await this.prompt({
-							type: 'input',
-							name: 'algo',
-							message: vorpal.chalk.yellow('Input an algorithm to mine with (scrypt, x11, sha256, etc...) : '),
-							default: 'scrypt'
-						});
-						poolOptions.algo = algo.algo;
-
-						let host = await this.prompt({
-							type: 'input',
-							name: 'host',
-							message: vorpal.chalk.yellow('Input a host url: '),
-							default: 'snowflake.oip.fun'
-						});
-						poolOptions.host = host.host;
-
-						let port = await this.prompt({
-							type: 'input',
-							name: 'port',
-							message: vorpal.chalk.yellow('Input a port to mine on: '),
-							default: 8080
-						});
-						poolOptions.port = port.port;
-
-						let user = await this.prompt({
-							type: 'input',
-							name: 'user',
-							message: vorpal.chalk.yellow('Input a wallet address to receive funds at: '),
-							description: 'Your workname'
-						});
-						poolOptions.user = user.user;
-
-						let priority = await this.prompt({
-							type: 'list',
-							name: 'priority',
-							message: vorpal.chalk.yellow('What priority would you like this pool to be at?: '),
-							choices: ['0', '1', '2', '3', '4']
-						});
-						poolOptions.priority = priority.priority;
-
-						let pass = await this.prompt({
-							type: 'input',
-							name: 'pass',
-							message: vorpal.chalk.yellow('Optionally add a password to the pool profile: '),
-							default: undefined
-						});
-						poolOptions.notes = pass.pass;
-
-						let notes = await this.prompt({
-							type: 'input',
-							name: 'notes',
-							message: vorpal.chalk.yellow('Optionally add additional notes to the pool profile: '),
-							default: undefined
-						});
-						poolOptions.notes = notes.notes;
-
-						return poolOptions
-					};
 
 					//if user has no pools, prompt to create one
 					if (setup_success.pools.length === 0) {
 						self.log(vorpal.chalk.yellow("0 pools found, create a pool!\n"));
 						let poolData;
 						try {
-							poolData = await setup_success.provider.createPool(await poolOpts());
+							poolData = await setup_success.provider.createPool(await PromptCreatePool());
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
@@ -177,7 +112,7 @@ export default function(vorpal, options){
 						if (choice.poolChoice  === 'create') {
 							let poolData;
 							try {
-								poolData = await setup_success.provider.createPool(await poolOpts());
+								poolData = await setup_success.provider.createPool(await PromptCreatePool());
 							} catch (err) {
 								self.log(`Error creating pool: \n ${err}`)
 							}
