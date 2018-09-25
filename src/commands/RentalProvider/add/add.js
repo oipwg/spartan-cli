@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 config()
 
-import {PromptCreatePool } from "./add/promptFunctions";
+import {PromptCreatePool } from "./promptFunctions";
 
 export default function(vorpal, options){
 
