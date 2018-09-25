@@ -1,8 +1,9 @@
 import withdraw from './withdraw'
 import balance from './balance'
+import addresses from './addresses'
 
 // An array of all the supported commands
-const COMMANDS = [ balance , withdraw ]
+const COMMANDS = [ balance , withdraw, addresses]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
