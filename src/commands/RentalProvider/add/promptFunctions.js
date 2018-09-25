@@ -1,3 +1,5 @@
+import uid from 'uid'
+
 export const Prompt_RentalProviders = async (self, vorpal, spartan) => {
 	return await self.prompt({
 		type: 'list',
@@ -37,7 +39,7 @@ export const Prompt_AddOrCreatePool = async (self, vorpal) => {
 		type: 'list',
 		name: 'option',
 		message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool?"),
-		choices: ['add', 'create']
+		choices: ['add', 'create', 'neither']
 	});
 };
 
@@ -55,7 +57,8 @@ export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 	let profileName = await self.prompt({
 		type: 'input',
 		name: 'profileName',
-		message: vorpal.chalk.yellow('Input a pool profile name: ')
+		message: vorpal.chalk.yellow('Input a pool profile name: '),
+		default: uid()
 	});
 	poolOptions.profileName = profileName.profileName;
 
@@ -87,7 +90,8 @@ export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 		type: 'input',
 		name: 'user',
 		message: vorpal.chalk.yellow('Input a wallet address to receive funds at: '),
-		description: 'Your workname'
+		description: 'Your workname',
+		default: spartan.wallet.wallet.coins['flo'].getMainAddress().getPublicAddress()
 	});
 	poolOptions.user = user.user;
 
@@ -102,7 +106,7 @@ export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 	let pass = await self.prompt({
 		type: 'input',
 		name: 'pass',
-		message: vorpal.chalk.yellow('Optionally add a password to the pool profile: '),
+		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add a password: `),
 		default: undefined
 	});
 	poolOptions.notes = pass.pass;
@@ -110,7 +114,7 @@ export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 	let notes = await self.prompt({
 		type: 'input',
 		name: 'notes',
-		message: vorpal.chalk.yellow('Optionally add additional notes to the pool profile: '),
+		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add any additional notes: `),
 		default: undefined
 	});
 	poolOptions.notes = notes.notes;

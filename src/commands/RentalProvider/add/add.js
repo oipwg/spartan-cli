@@ -95,7 +95,7 @@ export default function(vorpal, options){
 							if (poolData && poolData.success) {
 								setup_success.provider.setActivePoolID(poolData.profileID)
 								spartan.serialize();
-								self.log(vorpal.chalk.yellow(`Pool successfully added`))
+								self.log(vorpal.chalk.green(`Pool successfully added`))
 							} else {
 								if (poolData === null || poolData === undefined) {
 									self.log(vorpal.chalk.red(`Pool unsuccessfully added. Returned Undefined`))
