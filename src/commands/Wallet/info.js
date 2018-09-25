@@ -31,6 +31,16 @@ export default function(vorpal, options){
 					self.log(vorpal.chalk.white(`Seed: ${w.getSeed()}`));
 					break;
 				case 'networks':
+					let coin_network = await self.prompt({
+						type: 'list',
+						name: 'option',
+						message: vorpal.chalk.yellow('Which coin network would you like to get info on?'),
+						choices: Object.keys(w.getCoins())
+					});
+
+					self.log(vorpal.chalk.white(`${coin_network.option}: ${inspect(w.networks[coin_network.option])}`));
+
+					break;
 				case 'supported coins':
 					self.log(vorpal.chalk.white(`Supported coins: ${w.supported_coins}`));
 					break;
