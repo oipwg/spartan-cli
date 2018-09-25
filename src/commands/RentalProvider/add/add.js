@@ -37,7 +37,7 @@ export default function(vorpal, options){
 				name: provider_name.name === 'undefined' ? undefined : provider_name.name
 			});
 
-			this.log(vorpal.chalk.green('Setup success: \n',JSON.stringify(setup_success, null, 4)));
+			// this.log(vorpal.chalk.green('Setup success: \n',JSON.stringify(setup_success.pools, null, 4)));
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
@@ -60,8 +60,8 @@ export default function(vorpal, options){
 						let addOrCreatePool = await Prompt_AddOrCreatePool(self, vorpal);
 
 						if (addOrCreatePool.option === 'add') {
-							self.log('Add pool\n');
-
+							self.log('Add pool');
+							
 							let pools = setup_success.pools;
 							let poolArray = [];
 							let poolIDs = [];
@@ -75,13 +75,13 @@ export default function(vorpal, options){
 								if (poolToAdd.option.includes(id)) {
 									setup_success.provider.setActivePoolID(id)
 									for (let pool of pools) {
-										if (pool.id = id) {
+										if (pool.id === id) {
 											setup_success.provider.addPools(pool)
 										}
 									}
 								}
 							}
-							self.log(setup_success.provider)
+							self.log('\n',setup_success.provider)
 						}
 
 						if (addOrCreatePool.option  === 'create') {
