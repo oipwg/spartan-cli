@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "dotenv": "^6.0.0",
-    "spartanbot": "^0.5.1",
+    "spartanbot": "^0.5.2",
     "timestring": "^5.0.1",
     "vorpal": "^1.12.0"
   },
