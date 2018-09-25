@@ -1,7 +1,14 @@
 import { config } from 'dotenv'
 config()
 
-import {PromptCreatePool, PromptRentalProviders } from "./promptFunctions";
+import {
+	Prompt_APIKeys,
+	Prompt_CreatePool,
+	Prompt_RentalProviders,
+	Prompt_OptionalName,
+	Prompt_AddOrCreatePool,
+	Prompt_AddPool
+} from "./promptFunctions";
 
 export default function(vorpal, options){
 
@@ -14,30 +21,13 @@ export default function(vorpal, options){
 	.action(async function(args) {
 		const self = this;
 
-		let select_rental_providers = await PromptRentalProviders(self, vorpal, spartan)
+		let select_rental_providers = await Prompt_RentalProviders(self, vorpal, spartan);
 
 		let rental_provider_type = select_rental_providers.rental_provider;
 
-		let api_answers = await this.prompt([
-			{
-				type: "input",
-				name: "api_key",
-				message: vorpal.chalk.yellow("Please enter your API Key: "),
-				default: process.env.API_KEY
-			},{
-				type: "input",
-				name: "api_secret",
-				message: vorpal.chalk.yellow("Please enter your API Secret: "),
-				default: process.env.API_SECRET
-			}
-		]);
+		let api_answers = await Prompt_APIKeys(self, vorpal);
 
-		let provider_name = await this.prompt({
-			type: "input",
-			name: "name",
-			message: vorpal.chalk.yellow("Add an optional name to your rental provider: "),
-			default: 'undefined'
-		});
+		let provider_name = await Prompt_OptionalName(self, vorpal)
 
 		try {
 			let setup_success = await spartan.setupRentalProvider({
@@ -47,18 +37,17 @@ export default function(vorpal, options){
 				name: provider_name.name === 'undefined' ? undefined : provider_name.name
 			});
 
-			this.log(vorpal.chalk.green('Setup success: \n',setup_success));
+			this.log(vorpal.chalk.green('Setup success: \n',JSON.stringify(setup_success, null, 4)));
 
 			if (setup_success.success){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
 				if (setup_success.type === 'MiningRigRentals') {
-
 					//if user has no pools, prompt to create one
 					if (setup_success.pools.length === 0) {
 						self.log(vorpal.chalk.yellow("0 pools found, create a pool!\n"));
 						let poolData;
 						try {
-							poolData = await setup_success.provider.createPool(await PromptCreatePool(self, vorpal, spartan));
+							poolData = await setup_success.provider.createPool(await Prompt_CreatePool(self, vorpal, spartan));
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
@@ -68,15 +57,11 @@ export default function(vorpal, options){
 						spartan.serialize();
 						self.log(vorpal.chalk.yellow(`Pool successfully added`))
 					} else {
-						let choice = await this.prompt({
-							type: 'list',
-							name: 'poolChoice',
-							message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool?"),
-							choices: ['add', 'create']
-						});
+						let addOrCreatePool = await Prompt_AddOrCreatePool(self, vorpal);
 
-						if (choice.poolChoice === 'add') {
-							self.log('choice was add')
+						if (addOrCreatePool.option === 'add') {
+							self.log('Add pool\n');
+
 							let pools = setup_success.pools;
 							let poolArray = [];
 							let poolIDs = [];
@@ -84,15 +69,10 @@ export default function(vorpal, options){
 								poolArray.push(`Name: ${pool.name} - ID: ${pool.id}`)
 								poolIDs.push(pool.id)
 							}
-							let poolToAdd = await this.prompt({
-								type: 'list',
-								name: 'poolChoice',
-								message: vorpal.chalk.yellow("Would you like to create a new pool or add an existing pool?"),
-								choices: poolArray
-							});
+							let poolToAdd = await Prompt_AddPool(self, vorpal, poolArray)
 
 							for (let id of poolIDs) {
-								if (poolToAdd.poolChoice.includes(id)) {
+								if (poolToAdd.option.includes(id)) {
 									setup_success.provider.setActivePoolID(id)
 									for (let pool of pools) {
 										if (pool.id = id) {
@@ -104,18 +84,23 @@ export default function(vorpal, options){
 							self.log(setup_success.provider)
 						}
 
-						if (choice.poolChoice  === 'create') {
+						if (addOrCreatePool.option  === 'create') {
 							let poolData;
 							try {
-								poolData = await setup_success.provider.createPool(await PromptCreatePool(self, vorpal, spartan));
+								let poolInfo = await Prompt_CreatePool(self, vorpal, spartan);
+								poolData = await setup_success.provider.createPool(poolInfo);
 							} catch (err) {
-								self.log(`Error creating pool: \n ${err}`)
+								self.log(`Error creating pool -> ${err}`)
 							}
-							if (poolData.success) {
+							if (poolData && poolData.success) {
 								setup_success.provider.setActivePoolID(poolData.profileID)
+								spartan.serialize();
+								self.log(vorpal.chalk.yellow(`Pool successfully added`))
+							} else {
+								if (poolData === null || poolData === undefined) {
+									self.log(vorpal.chalk.red(`Pool unsuccessfully added. Returned Undefined`))
+								}
 							}
-							spartan.serialize();
-							self.log(vorpal.chalk.yellow(`Pool successfully added`))
 						}
  					}
 				}
