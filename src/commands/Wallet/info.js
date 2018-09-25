@@ -1,3 +1,5 @@
+import { inspect } from 'util'
+
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
 
@@ -20,23 +22,31 @@ export default function(vorpal, options){
 
 			switch (wallet_props.option) {
 				case 'mnemonic':
-					self.log(vorpal.chalk.green(`Mnemonic: ${w.getMnemonic()}`));
+					self.log(vorpal.chalk.white(`Mnemonic: ${w.getMnemonic()}`));
 					break;
 				case 'entropy':
-					self.log(vorpal.chalk.green(`Entropy: ${w.getEntropy()}`));
+					self.log(vorpal.chalk.white(`Entropy: ${w.getEntropy()}`));
 					break;
 				case 'seed':
-					self.log(vorpal.chalk.green(`Seed: ${w.getSeed()}`));
+					self.log(vorpal.chalk.white(`Seed: ${w.getSeed()}`));
 					break;
 				case 'networks':
 				case 'supported coins':
-					self.log(vorpal.chalk.green(`Supported coins: ${w.supported_coins}`));
+					self.log(vorpal.chalk.white(`Supported coins: ${w.supported_coins}`));
 					break;
 				case 'coins':
-					self.log(vorpal.chalk.green(`Active coins: ${Object.keys(w.getCoins())}`));
+					let coin = await self.prompt({
+						type: 'list',
+						name: 'option',
+						message: vorpal.chalk.yellow('Which coin would you like to get info on?'),
+						choices: Object.keys(w.getCoins())
+					});
+
+					self.log(vorpal.chalk.white(`${coin.option}: ${inspect(w.getCoins()[coin.option].getCoinInfo())}`));
+
 					break;
 				case 'discover':
-					self.log(vorpal.chalk.green(`Discover is set to: ${w.discover}`));
+					self.log(vorpal.chalk.white(`Discover is set to: ${w.discover}`));
 					break;
 				default:
 					self.log(vorpal.chalk.red('No options chosen!'))
