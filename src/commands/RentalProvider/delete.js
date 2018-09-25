@@ -36,7 +36,7 @@ export default function(vorpal, options){
 		let confirm_answer = await this.prompt({
 			type: "confirm",
 			name: "confirm",
-			message: vorpal.chalk.yellow("Are you sure you wish to delete `" + rental_provider_to_delete + "`?"),
+			message: vorpal.chalk.red("Are you sure you wish to delete `" + rental_provider_to_delete + "`?"),
 			default: true
 		})
 
