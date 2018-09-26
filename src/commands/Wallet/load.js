@@ -22,8 +22,9 @@ export default function(vorpal, options){
 				mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 			};
 
-			// if (options.reInitialize) {
-			// 	options.reInitialize(settings)
+			// if (options.reinitialize) {
+			// 	options.reinitialize(settings)
+			// 	self.log(spartan)
 			// }
 			// self.log(vorpal.chalk.yellow('Spartan Re-Initialized'))
 		})
