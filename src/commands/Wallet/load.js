@@ -6,27 +6,39 @@ export default function(vorpal, options){
 	vorpal
 		.command('wallet load')
 		.alias('wl')
-		.description('Load the SpartanBot with a new wallet')
+		.description('Reinitialize Spartanbot with your own mnemonic')
 		.action(async function(args) {
 			const self = this;
-			let w;
-			if (spartan.wallet && spartan.wallet.wallet) {
-				w = spartan.wallet.wallet;
-			} else {w = undefined}
-			if (!w) {
-				self.log(vorpal.chalk.red('No wallet found!\nSpartan: ', spartan));
-				return
-			}
-			self.log(w.mnemonic);
-			let settings = {
-				mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+
+			let w = spartan.wallet, _mnemonic = undefined;
+			if (w.wallet)
+				_mnemonic = w.wallet.getMnemonic();
+
+			let mnemonic = await self.prompt({
+				type: 'input',
+				message: vorpal.chalk.yellow('Please input a valid mnemonic: '),
+				name: 'mnemonic',
+				default: _mnemonic
+			});
+
+			const isMnemonic = (mnemonic) => {
+				return typeof mnemonic === "string" && mnemonic.split(" ").length >= 2;
 			};
 
-			// if (options.reinitialize) {
-			// 	options.reinitialize(settings)
-			// 	self.log(spartan)
-			// }
-			// self.log(vorpal.chalk.yellow('Spartan Re-Initialized'))
-		})
+			if (mnemonic.mnemonic !== undefined && isMnemonic(mnemonic.mnemonic)) {
+				let settings = {
+					mnemonic: mnemonic.mnemonic
+				};
 
+				if (options.reinitialize) {
+					await options.reinitialize(settings);
+					// self.log(spartan)
+					self.log(vorpal.chalk.yellow(`Spartan reinitialized with new wallet account`,))
+				} else {
+					self.log(vorpal.chalk.red(`Spartan not reinitialized`))
+				}
+			} else {
+				self.log(vorpal.chalk.red(`Invalid mnemonic`))
+			}
+		})
 }
