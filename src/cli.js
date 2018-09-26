@@ -10,8 +10,8 @@ let spartan = new SpartanBot();
 const reinitialize = async (settings) => {
 	spartan_cli = Vorpal();
 	spartan = new SpartanBot(settings);
-	// await spartan._deserialize
-	// console.log(inspect(spartan))
+
+	// console.log(inspect(spartan));
 
 	__main__(spartan)
 };

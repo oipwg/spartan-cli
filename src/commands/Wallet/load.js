@@ -31,9 +31,9 @@ export default function(vorpal, options){
 				};
 
 				if (options.reinitialize) {
-					await options.reinitialize(settings);
 					// self.log(spartan)
-					self.log(vorpal.chalk.yellow(`Spartan reinitialized with new wallet account`,))
+					await options.reinitialize(settings);
+					self.log(vorpal.chalk.yellow(`Spartan reinitialized with new wallet account`))
 				} else {
 					self.log(vorpal.chalk.red(`Spartan not reinitialized`))
 				}
