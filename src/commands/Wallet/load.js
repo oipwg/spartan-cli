@@ -1,5 +1,3 @@
-import { inspect } from 'util'
-
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
 
