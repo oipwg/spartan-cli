@@ -9,16 +9,22 @@ export default function(vorpal, options){
 		.description('Get information about your current wallet')
 		.action(async function(args) {
 			const self = this;
-
+			// self.log(spartan)
 			this.log(vorpal.chalk.yellow("\nWallet Info"));
-			let w = spartan.wallet.wallet;
-
+			let w;
+			if (spartan.wallet && spartan.wallet.wallet) {
+				w = spartan.wallet.wallet;
+			} else {w = undefined}
+			if (!w) {
+				self.log(vorpal.chalk.red('No wallet found!\nSpartan: ', spartan));
+				return
+			}
 			let wallet_props = await self.prompt({
 				type: 'list',
 				name: 'option',
 				message: vorpal.chalk.yellow('Pick a property to get more info on it'),
 				choices: ['mnemonic', 'entropy', 'seed', 'networks', 'supported coins', 'coins', 'discover']
-			})
+			});
 
 			switch (wallet_props.option) {
 				case 'mnemonic':
@@ -61,7 +67,5 @@ export default function(vorpal, options){
 				default:
 					self.log(vorpal.chalk.red('No options chosen!'))
 			}
-
-
 		})
 }
