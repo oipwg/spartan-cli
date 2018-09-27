@@ -1,5 +1,6 @@
 // Import each command
 import Rent from './rent'
+import Pools from './Pools'
 import RentalProvider from './RentalProvider'
 import Settings from './Settings'
 import Wallet from './Wallet'
