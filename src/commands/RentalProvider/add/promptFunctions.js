@@ -9,7 +9,7 @@ export const Prompt_RentalProviders = async (self, vorpal, spartan) => {
 	});
 };
 
-export const Prompt_APIKeys = async (self, vorpal) => {
+export const Prompt_MRRAPIKeys = async (self, vorpal) => {
 	return await self.prompt([
 		{
 			type: "input",
@@ -21,6 +21,20 @@ export const Prompt_APIKeys = async (self, vorpal) => {
 			name: "api_secret",
 			message: vorpal.chalk.yellow("Please enter your API Secret: "),
 			default: process.env.API_SECRET
+		}
+	]);
+};
+
+export const Prompt_NiceHashAPIKeys = async (self, vorpal) => {
+	return await self.prompt([
+		{
+			type: "input",
+			name: "api_key",
+			message: vorpal.chalk.yellow("Please enter your API Key: ")
+		},{
+			type: "input",
+			name: "api_id",
+			message: vorpal.chalk.yellow("Please enter your API ID: ")
 		}
 	]);
 };
