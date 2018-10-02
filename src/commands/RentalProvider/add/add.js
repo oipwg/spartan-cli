@@ -2,7 +2,8 @@ import { config } from 'dotenv'
 config()
 
 import {
-	Prompt_APIKeys,
+	Prompt_MRRAPIKeys,
+	Prompt_NiceHashAPIKeys,
 	Prompt_CreatePool,
 	Prompt_RentalProviders,
 	Prompt_OptionalName,
@@ -25,15 +26,21 @@ export default function(vorpal, options){
 
 		let rental_provider_type = select_rental_providers.rental_provider;
 
-		let api_answers = await Prompt_APIKeys(self, vorpal);
+		let api_answers;
+		if (rental_provider_type === "MiningRigRentals") {
+			api_answers = await Prompt_MRRAPIKeys(self, vorpal);
+		} else {
+			api_answers = await Prompt_NiceHashAPIKeys
+		}
 
-		let provider_name = await Prompt_OptionalName(self, vorpal)
+		let provider_name = await Prompt_OptionalName(self, vorpal);
 
 		try {
 			let setup_success = await spartan.setupRentalProvider({
 				type: rental_provider_type,
 				api_key: api_answers.api_key,
 				api_secret: api_answers.api_secret,
+				api_id: api_answers.api_id,
 				name: provider_name.name === 'undefined' ? undefined : provider_name.name
 			});
 
