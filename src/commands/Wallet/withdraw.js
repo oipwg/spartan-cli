@@ -4,8 +4,8 @@ export default function(vorpal, options){
     vorpal
     .command('wallet withdraw')
     .alias('wallet w')
+    .description('Withdraw from your wallet')
 	.action(async function(args) {
-        // this.log("This functionality does not exist yet");
         let balance = await spartan.getWalletBalance(true)
 
         this.log(balance)
@@ -24,10 +24,11 @@ export default function(vorpal, options){
             name: "confirm",
             message: vorpal.chalk.yellow(`Are you sure that you wish to to withdraw from ${balance.flo} to ${new_address}`)
         })
-
+     
         if (confirm_withdraw.confirm){
-            let withdraw = spartan.withdrawFromWallet(new_address)
-
+        let new_address = options
+            let withdraw = await spartan.withdrawFromWallet(options)
+            
             if (withdraw){
                 this.log(vorpal.chalk.green('Transaction has been sent!'))
             } else {
