@@ -6,11 +6,7 @@
   "dependencies": {
     "dotenv": "^6.0.0",
     "oip-account": "git+https://github.com/oipwg/oip-account.git",
-<<<<<<< HEAD
     "spartanbot": "git+https://github.com/oipwg/spartanbot.git",
-=======
-    "spartanbot": "^0.6.0",
->>>>>>> 9dddedb00e1f4a85220c0274d78e9310ebb31f04
     "timestring": "^5.0.1",
     "uid": "0.0.2",
     "vorpal": "^1.12.0"
