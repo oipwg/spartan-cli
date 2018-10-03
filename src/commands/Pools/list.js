@@ -14,14 +14,14 @@ export default function(vorpal, options){
 
 			let pools;
 			try {
-				pools = await spartan.getPools()
+				pools = await spartan.returnPools()
 			} catch (err) {
 				self.log(vorpal.chalk.red("Failed to get pools: ", err))
 				return
 			}
 
 			for (let pool of pools) {
-				self.log(vorpal.chalk.blue(`${pool.id} ${pool.name} ${pool.host} ${pool.id} ${pool.port} ${pool.type}`))
+				self.log(vorpal.chalk.white(`${JSON.stringify(pool, null, 4)}`))
 			}
 
 		});
