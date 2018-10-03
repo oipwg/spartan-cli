@@ -54,7 +54,7 @@ export const Prompt_AddOrCreatePool = async (self, vorpal) => {
 	return await self.prompt({
 		type: 'list',
 		name: 'option',
-		message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool?"),
+		message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool/profile?"),
 		choices: ['add', 'create', 'neither']
 	});
 };
@@ -68,7 +68,7 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 	});
 }
 
-export const Prompt_CreatePool = async (self, vorpal, spartan) => {
+export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 	let poolOptions = {};
 	let profileName = await self.prompt({
 		type: 'input',
