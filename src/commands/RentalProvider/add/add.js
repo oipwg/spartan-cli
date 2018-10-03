@@ -5,7 +5,7 @@ config()
 import {
 	Prompt_MRRAPIKeys,
 	Prompt_NiceHashAPIKeys,
-	Prompt_CreatePool,
+	Prompt_CreatePoolProfile,
 	Prompt_RentalProviders,
 	Prompt_OptionalName,
 	Prompt_AddOrCreatePool,
@@ -54,16 +54,16 @@ export default function(vorpal, options){
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!\n"));
 				if (setup_success.type === 'MiningRigRentals') {
 					//if user has no pools, prompt to create one
-					if (setup_success.pools.length === 0) {
-						self.log(vorpal.chalk.yellow("0 pools found, create a pool!\n"));
+					if (setup_success.poolProfiles.length === 0) {
+						self.log(vorpal.chalk.yellow("0 pool profiles found, create a profile!\n"));
 						let poolData;
 						try {
-							poolData = await setup_success.provider.createPool(await Prompt_CreatePool(self, vorpal, spartan));
+							poolData = await setup_success.provider.createPoolProfile(await Prompt_CreatePoolProfile(self, vorpal, spartan));
 						} catch (err) {
 							self.log(`Error creating pool: \n ${err}`)
 						}
 						if (poolData.success) {
-							setup_success.provider.setActivePool(poolData.profileID)
+							setup_success.provider.setActivePoolProfile(poolData.profileID)
 						}
 						spartan.serialize();
 						self.log(vorpal.chalk.yellow(`Pool successfully added`))
@@ -71,40 +71,39 @@ export default function(vorpal, options){
 						let addOrCreatePool = await Prompt_AddOrCreatePool(self, vorpal);
 
 						if (addOrCreatePool.option === 'add') {
-							self.log('Add pool');
-
-							let pools = setup_success.pools;
-							let poolArray = [];
-							let poolIDs = [];
-							for (let pool of pools) {
-								poolArray.push(`Name: ${pool.name} - ID: ${pool.id}`)
-								poolIDs.push(pool.id)
+							let poolProfiles = setup_success.poolProfiles;
+							
+							let profileArray = [];
+							let profileIDs = [];
+							for (let profile of poolProfiles) {
+								profileArray.push(`Name: ${profile.name} - ID: ${profile.id}`)
+								profileIDs.push(profile.id)
 							}
-							let poolToAdd = await Prompt_AddPool(self, vorpal, poolArray)
-
-							for (let id of poolIDs) {
+							let poolToAdd = await Prompt_AddPool(self, vorpal, profileArray)
+							for (let id of profileIDs) {
 								if (poolToAdd.option.includes(id)) {
-									setup_success.provider.setActivePool(id)
-									for (let pool of pools) {
-										if (pool.id === id) {
-											setup_success.provider.addPools(pool)
+									setup_success.provider.setActivePoolProfile(id)
+									const len = poolProfiles.length
+									for (let i = 0; i < len; i++) {
+										if (poolProfiles[i].id === id) {
+											setup_success.provider.addPoolProfiles(poolProfiles[i])
 										}
 									}
 								}
 							}
-							self.log('\n',setup_success.provider)
+							// self.log('\n',setup_success.provider)
 						}
 
 						if (addOrCreatePool.option  === 'create') {
 							let poolData;
 							try {
-								let poolInfo = await Prompt_CreatePool(self, vorpal, spartan);
-								poolData = await setup_success.provider.createPool(poolInfo);
+								let poolInfo = await Prompt_CreatePoolProfile(self, vorpal, spartan);
+								poolData = await setup_success.provider.createPoolProfile(poolInfo);
 							} catch (err) {
-								self.log(`Error creating pool -> ${err}`)
+								self.log(`Error creating pool: ${err}`)
 							}
 							if (poolData && poolData.success) {
-								setup_success.provider.setActivePool(poolData.profileID)
+								setup_success.provider.setActivePoolProfile(poolData.profileID)
 								spartan.serialize();
 								self.log(vorpal.chalk.green(`Pool successfully added`))
 							} else {
@@ -156,7 +155,7 @@ export default function(vorpal, options){
 						self.log(vorpal.chalk.blue(`Pool added!`))
 					}
 				}
-				// self.log(setup_success.success)
+				spartan.serialize()
 			}  else  {
 				if(setup_success.message === "settings.api_key is required!"){
 					this.log(vorpal.chalk.red("You must input an API Key!"))
