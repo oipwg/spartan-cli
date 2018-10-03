@@ -72,7 +72,7 @@ export default function(vorpal, options){
 
 						if (addOrCreatePool.option === 'add') {
 							let poolProfiles = setup_success.poolProfiles;
-							
+
 							let profileArray = [];
 							let profileIDs = [];
 							for (let profile of poolProfiles) {
@@ -96,11 +96,11 @@ export default function(vorpal, options){
 
 						if (addOrCreatePool.option  === 'create') {
 							let poolData;
+							let poolInfo = await Prompt_CreatePoolProfile(self, vorpal, spartan);
 							try {
-								let poolInfo = await Prompt_CreatePoolProfile(self, vorpal, spartan);
 								poolData = await setup_success.provider.createPoolProfile(poolInfo);
 							} catch (err) {
-								self.log(`Error creating pool: ${err}`)
+								self.log(`Error while creating the profile: ${err}`)
 							}
 							if (poolData && poolData.success) {
 								setup_success.provider.setActivePoolProfile(poolData.profileID)
@@ -108,7 +108,7 @@ export default function(vorpal, options){
 								self.log(vorpal.chalk.green(`Pool successfully added`))
 							} else {
 								if (poolData === null || poolData === undefined) {
-									self.log(vorpal.chalk.red(`Pool unsuccessfully added. Returned Undefined`))
+									self.log(vorpal.chalk.red(`Pool unsuccessfully added. Pool Data: ${poolData}`))
 								}
 							}
 						}
