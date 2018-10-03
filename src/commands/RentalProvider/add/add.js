@@ -25,12 +25,14 @@ export default function(vorpal, options){
 		let select_rental_providers = await Prompt_RentalProviders(self, vorpal, spartan);
 
 		let rental_provider_type = select_rental_providers.rental_provider;
+		if (rental_provider_type === 'cancel')
+			return;
 
 		let api_answers;
 		if (rental_provider_type === "MiningRigRentals") {
 			api_answers = await Prompt_MRRAPIKeys(self, vorpal);
 		} else {
-			api_answers = await Prompt_NiceHashAPIKeys
+			api_answers = await Prompt_NiceHashAPIKeys(self, vorpal);
 		}
 
 		let provider_name = await Prompt_OptionalName(self, vorpal);

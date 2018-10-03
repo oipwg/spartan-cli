@@ -5,7 +5,7 @@ export const Prompt_RentalProviders = async (self, vorpal, spartan) => {
 		type: 'list',
 		name: 'rental_provider',
 		message: vorpal.chalk.yellow('Which Rental Provider would you like to add?'),
-		choices: spartan.getSupportedRentalProviders()
+		choices: [...spartan.getSupportedRentalProviders(), 'Cancel']
 	});
 };
 
@@ -30,11 +30,13 @@ export const Prompt_NiceHashAPIKeys = async (self, vorpal) => {
 		{
 			type: "input",
 			name: "api_key",
-			message: vorpal.chalk.yellow("Please enter your API Key: ")
+			message: vorpal.chalk.yellow("Please enter your API Key: "),
+			default: process.env.NICEHASH_API_KEY
 		},{
 			type: "input",
 			name: "api_id",
-			message: vorpal.chalk.yellow("Please enter your API ID: ")
+			message: vorpal.chalk.yellow("Please enter your API ID: "),
+			default: process.env.NICEHASH_API_ID
 		}
 	]);
 };
