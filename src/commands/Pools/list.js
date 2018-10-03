@@ -8,7 +8,7 @@ export default function(vorpal, options){
 		.action(async function(args) {
 			const self = this;
 			if (spartan.getRentalProviders().length === 0) {
-				self.log(vorpal.chalk.red(`No rental providers found! Consider adding one by typing: rentalprovider add`));
+				self.log(vorpal.chalk.red(`No rental providers found! Add one by typing: rentalprovider add`));
 				return
 			}
 
@@ -20,8 +20,33 @@ export default function(vorpal, options){
 				return
 			}
 
+			const printPool = (pool) => {
+				self.log(vorpal.chalk.white(`${vorpal.chalk.blue(pool.type)} ${vorpal.chalk.green(pool.host + ':' + pool.port)} ${vorpal.chalk.yellow(pool.name)} ${pool.user}`))
+			};
+
+			const fmtPool = (pool) => {
+				let tmpObj = {}
+				for (let opt in pool) {
+					if (opt === 'algo') {
+						tmpObj.type = pool[opt]
+					} else if (opt === 'pool_host') {
+						tmpObj.host = pool[opt]
+					} else if (opt === 'pool_port') {
+						tmpObj.port = pool[opt]
+					} else if (opt === 'pool_user') {
+						tmpObj.user = pool[opt]
+					} else if (opt === 'pool_pass') {
+						tmpObj.pass = pool[opt]
+					} else {
+						tmpObj[opt] = pool[opt]
+					}
+				}
+				return tmpObj
+			};
+
+
 			for (let pool of pools) {
-				self.log(vorpal.chalk.white(`${JSON.stringify(pool, null, 4)}`))
+				printPool(fmtPool(pool))
 			}
 
 		});
