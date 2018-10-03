@@ -140,6 +140,14 @@ export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 
 export const Prompt_NiceHashCreatePool = async (self, vorpal, spartan) => {
 	let NiceHashPool = {}
+	let type = await self.prompt({
+		type: 'input',
+		name: 'type',
+		message: vorpal.chalk.yellow('Algo: '),
+		default: 'scrypt'
+	});
+	NiceHashPool["algo"] = type.type;
+	
 	let host = await self.prompt({
 		type: 'input',
 		name: 'host',
