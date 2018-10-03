@@ -138,3 +138,50 @@ export const Prompt_CreatePool = async (self, vorpal, spartan) => {
 	return poolOptions
 };
 
+export const Prompt_NiceHashCreatePool = async (self, vorpal, spartan) => {
+	let NiceHashPool = {}
+	let host = await self.prompt({
+		type: 'input',
+		name: 'host',
+		message: vorpal.chalk.yellow(`Host: `),
+		default: "snowflake.oip.fun"
+	});
+	NiceHashPool["pool_host"] = host.host;
+
+	let port = await self.prompt({
+		type: 'input',
+		name: 'port',
+		message: vorpal.chalk.yellow('Port: '),
+		default: 3043
+	})
+	NiceHashPool["pool_port"] = port.port
+
+	let user = await self.prompt({
+		type: 'input',
+		name: 'user',
+		message: vorpal.chalk.yellow('User: '),
+		default: spartan.wallet.wallet.coins['flo'].getMainAddress().getPublicAddress()
+	})
+	NiceHashPool["pool_user"] = user.user
+
+	let pass = await self.prompt({
+		type: 'input',
+		name: 'pass',
+		message: vorpal.chalk.yellow('Password: '),
+		default: 'x'
+	})
+	NiceHashPool["pool_pass"] = pass.pass
+
+	let id = uid();
+	let name = await self.prompt({
+		type: 'input',
+		name: 'name',
+		message: vorpal.chalk.yellow('Name: '),
+		default: `NiceHash Pool: ${id}`
+	});
+	NiceHashPool["name"] = name.name;
+	NiceHashPool.id = id
+
+	return NiceHashPool
+};
+

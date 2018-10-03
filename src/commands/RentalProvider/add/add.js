@@ -1,3 +1,4 @@
+import uid from 'uid';
 import { config } from 'dotenv'
 config()
 
@@ -8,7 +9,8 @@ import {
 	Prompt_RentalProviders,
 	Prompt_OptionalName,
 	Prompt_AddOrCreatePool,
-	Prompt_AddPool
+	Prompt_AddPool,
+	Prompt_NiceHashCreatePool
 } from "./promptFunctions";
 
 export default function(vorpal, options){
@@ -49,7 +51,7 @@ export default function(vorpal, options){
 			// this.log(vorpal.chalk.green('Setup success: \n',JSON.stringify(setup_success.pools, null, 4)));
 
 			if (setup_success.success){
-				this.log(vorpal.chalk.green("Successfully added new Rental Provider!"));
+				this.log(vorpal.chalk.green("Successfully added new Rental Provider!\n"));
 				if (setup_success.type === 'MiningRigRentals') {
 					//if user has no pools, prompt to create one
 					if (setup_success.pools.length === 0) {
@@ -61,7 +63,7 @@ export default function(vorpal, options){
 							self.log(`Error creating pool: \n ${err}`)
 						}
 						if (poolData.success) {
-							setup_success.provider.setActivePoolID(poolData.profileID)
+							setup_success.provider.setActivePool(poolData.profileID)
 						}
 						spartan.serialize();
 						self.log(vorpal.chalk.yellow(`Pool successfully added`))
@@ -82,7 +84,7 @@ export default function(vorpal, options){
 
 							for (let id of poolIDs) {
 								if (poolToAdd.option.includes(id)) {
-									setup_success.provider.setActivePoolID(id)
+									setup_success.provider.setActivePool(id)
 									for (let pool of pools) {
 										if (pool.id === id) {
 											setup_success.provider.addPools(pool)
@@ -102,7 +104,7 @@ export default function(vorpal, options){
 								self.log(`Error creating pool -> ${err}`)
 							}
 							if (poolData && poolData.success) {
-								setup_success.provider.setActivePoolID(poolData.profileID)
+								setup_success.provider.setActivePool(poolData.profileID)
 								spartan.serialize();
 								self.log(vorpal.chalk.green(`Pool successfully added`))
 							} else {
@@ -112,6 +114,47 @@ export default function(vorpal, options){
 							}
 						}
  					}
+				}
+				if (setup_success.type === 'NiceHash') {
+					let poolOptions = await Prompt_AddOrCreatePool(self, vorpal);
+					if (poolOptions.option === 'add') {
+
+						let poolArray = setup_success.provider.returnPools();
+
+						//if on pools, ask if they want to create one
+						if (poolArray.length === 0) {
+							let confirm = await self.prompt({
+								type: 'confirm',
+								name: 'option',
+								default: true,
+								message: vorpal.chalk.yellow('Found no pools to add, would you like to create one?')
+							});
+							if (confirm.option) {
+								//create pool
+								let NiceHashPool = await Prompt_NiceHashCreatePool(self, vorpal, spartan);
+								await setup_success.provider.createPool(NiceHashPool);
+								setup_success.provider.setActivePool(NiceHashPool.id);
+								self.log(vorpal.chalk.blue(`Pool added!`))
+							}
+						} else {
+							let poolObject = {};
+							for (let pool of poolArray) {
+								poolObject[pool.name] = pool.id
+							}
+							let poolPicked = await Prompt_AddPool(self, vorpal, poolArray);
+
+							for (let pool in poolObject) {
+								if (pool === poolPicked.option) {
+									setup_success.provider.setActivePool(poolObject[pool])
+								}
+							}
+						}
+					} else if (poolOptions.option === 'create') {
+						//Prompt create Nice Hash pool
+						let NiceHashPool = await Prompt_NiceHashCreatePool(self, vorpal, spartan);
+						await setup_success.provider.createPool(NiceHashPool);
+						self.log(vorpal.chalk.blue(`Pool added!`))
+					}
 				}
 				// self.log(setup_success.success)
 			}  else  {
