@@ -26,7 +26,7 @@ export default function(vorpal, options){
         })
      
         if (confirm_withdraw.confirm){
-            options.addresss=new_address
+            options.to =new_address
             options.coin = "flo"
             let withdraw = await spartan.withdrawFromWallet(options)
             
