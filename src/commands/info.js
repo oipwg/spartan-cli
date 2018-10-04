@@ -6,7 +6,7 @@ export default function(vorpal, options){
 	vorpal
 		.command('spartan info')
 		.alias('si')
-		.description('Reinitialize Spartanbot with your own mnemonic')
+		.description('Show the JSON structure of the current SpartanBot')
 		.action(async function(args) {
 			const self = this;
 			self.log(vorpal.chalk.yellow(inspect(spartan)))
