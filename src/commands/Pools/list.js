@@ -85,17 +85,21 @@ export default function(vorpal, options){
 								let poolToUse;
 								for (let pool of pools) {
 									if (pool.id === poolid) {
-										poolToUse = {...pool, profileID}
+										poolToUse = {...pool, profileID, priority: 0}
 									}
 								}
+								// console.log('pool to use: ', poolToUse)
 								let res;
 								try {
 									res = await provider.addPoolToProfile(poolToUse)
- c								} catch (err) {
+ 								} catch (err) {
 									throw new Error(`Failed to add pool to main profile: ${err}`)
 								}
 								if (res.success)
-									self.log(vorpal.chalk.yellow('Successfully added pool to active profile'))
+									self.log(vorpal.chalk.yellow('Pool is active'))
+								else
+									self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
+
 
 							}
 							if (provider.getInternalType() === "NiceHash") {
@@ -108,10 +112,8 @@ export default function(vorpal, options){
 						let success = await spartan.deletePool(poolid)
 						self.log('delete success', success)
 					}
-
+					spartan.serialize()
 				}
 			}
-
-
 		});
 }
