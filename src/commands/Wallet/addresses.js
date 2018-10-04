@@ -7,6 +7,7 @@ export default function(vorpal, options){
 		.description('Browse through the BIP44 wallet addresses')
 		.action(async function(args) {
 			const self = this;
+			await spartan._deserialize
 
 			this.log(vorpal.chalk.yellow("\nWelcome... to Sky's BIP44 HD Multi Wallet"));
 			let w = spartan.wallet.wallet;
