@@ -66,7 +66,6 @@ export default function(vorpal, options){
 										poolToUse = {...pool, profileID, priority: 0}
 									}
 								}
-								// console.log('pool to use: ', poolToUse)
 								let res;
 								try {
 									res = await provider.addPoolToProfile(poolToUse)
@@ -77,8 +76,6 @@ export default function(vorpal, options){
 									self.log(vorpal.chalk.yellow('Pool is active'))
 								else
 									self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
-
-
 							}
 							if (provider.getInternalType() === "NiceHash") {
 								provider.setActivePool(poolid)
