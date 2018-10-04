@@ -44,6 +44,8 @@ export default function(vorpal, options){
 			let delete_success = spartan.deleteRentalProvider(uid_map[rental_provider_to_delete])
 
 			if (delete_success){
+				if (spartan.getRentalProviders().length === 0)
+					spartan.pools = []
 				this.log(vorpal.chalk.green("Successfully deleted `" + rental_provider_to_delete + "`!"))
 			} else {
 				this.log(vorpal.chalk.red("Error! Unable to delete Rental Provider!"))
