@@ -16,7 +16,7 @@ export default function(vorpal, options){
 
 			self.log('Create pool');
 			let poolOpts = {}
-			
+
 			let name = await self.prompt({
 				type: 'input',
 				message: 'Name: ',
@@ -81,6 +81,8 @@ export default function(vorpal, options){
 			} else {
 				self.log(vorpal.chalk.red(`Pool unsuccessfully created. Type 'pool list' to see if something went wrong`))
 			}
+
+			spartan.serialize()
 
 		});
 }
