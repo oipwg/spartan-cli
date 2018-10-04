@@ -1,9 +1,10 @@
 import list from './list'
 import create from './create'
+import profiles from './profiles'
 
 
 // An array of all the supported commands
-const COMMANDS = [ list, create ];
+const COMMANDS = [ list, create, profiles ];
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array
