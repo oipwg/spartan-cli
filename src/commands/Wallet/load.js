@@ -38,5 +38,6 @@ export default function(vorpal, options){
 			} else {
 				self.log(vorpal.chalk.red(`Invalid mnemonic`))
 			}
+			spartan.serialize()
 		})
 }
