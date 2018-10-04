@@ -50,12 +50,18 @@ export const Prompt_OptionalName = async (self, vorpal) => {
 	});
 };
 
-export const Prompt_AddOrCreatePool = async (self, vorpal) => {
+export const Prompt_AddOrCreatePool = async (self, vorpal, provider) => {
+	let message = provider.getInternalType() === "MiningRigRentals" ? (
+		vorpal.chalk.yellow("Select a pool profile to use or create a new one")
+	) : (vorpal.chalk.yellow("Add an existing pool or a create a new pool"))
+	let choices = provider.getInternalType() === "MiningRigRentals" ? (['select', 'create', 'exit']) : (
+		['add', 'create', 'exit']
+	)
 	return await self.prompt({
 		type: 'list',
 		name: 'option',
-		message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool/profile?"),
-		choices: ['add', 'create', 'exit']
+		message: message,
+		choices: choices
 	});
 };
 
@@ -63,7 +69,7 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 	return await self.prompt({
 		type: 'list',
 		name: 'option',
-		message: vorpal.chalk.yellow("Please choose a pool"),
+		message: vorpal.chalk.yellow("Please choose from the following: "),
 		choices: [...poolArray, 'exit/return']
 	});
 }
@@ -123,7 +129,7 @@ export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 		type: 'input',
 		name: 'pass',
 		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add a password: `),
-		default: undefined
+		default: 'x'
 	});
 	poolOptions.notes = pass.pass;
 
@@ -131,7 +137,7 @@ export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 		type: 'input',
 		name: 'notes',
 		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add any additional notes: `),
-		default: undefined
+		default: `Created at ${Date.now()}`
 	});
 	poolOptions.notes = notes.notes;
 
