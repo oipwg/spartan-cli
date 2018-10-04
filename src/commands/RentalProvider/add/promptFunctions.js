@@ -55,7 +55,7 @@ export const Prompt_AddOrCreatePool = async (self, vorpal) => {
 		type: 'list',
 		name: 'option',
 		message: vorpal.chalk.yellow("Would you like to add an existing pool or a create a new pool/profile?"),
-		choices: ['add', 'create', 'neither']
+		choices: ['add', 'create', 'exit']
 	});
 };
 
@@ -64,7 +64,7 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 		type: 'list',
 		name: 'option',
 		message: vorpal.chalk.yellow("Please choose a pool"),
-		choices: poolArray
+		choices: [...poolArray, 'exit/return']
 	});
 }
 
