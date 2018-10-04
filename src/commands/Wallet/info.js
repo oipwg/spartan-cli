@@ -9,6 +9,7 @@ export default function(vorpal, options){
 		.description('Get information about your current wallet')
 		.action(async function(args) {
 			const self = this;
+			await spartan._deserialize
 			// self.log(spartan)
 			this.log(vorpal.chalk.yellow("\nWallet Info"));
 			let w;
