@@ -1,9 +1,11 @@
+import {serPool, fmtPool} from "../../utils";
+
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
 
 	vorpal
-		.command('pool list')
-		.description('Selection of a rental provider that you wish to remove')
+		.command('pools')
+		.description('List of all current pools')
 		.alias('pl')
 		.action(async function(args) {
 			const self = this;
@@ -21,33 +23,9 @@ export default function(vorpal, options){
 				return
 			}
 
-			const fmtPool = (pool) => {
-				return vorpal.chalk.white(`${vorpal.chalk.blue(pool.type)} ${vorpal.chalk.green(pool.host + ':' + pool.port)} ${vorpal.chalk.yellow(pool.name)} ${pool.user}`)
-			};
-
-			const serPool = (pool) => {
-				let tmpObj = {}
-				for (let opt in pool) {
-					if (opt === 'algo') {
-						tmpObj.type = pool[opt]
-					} else if (opt === 'pool_host') {
-						tmpObj.host = pool[opt]
-					} else if (opt === 'pool_port') {
-						tmpObj.port = pool[opt]
-					} else if (opt === 'pool_user') {
-						tmpObj.user = pool[opt]
-					} else if (opt === 'pool_pass') {
-						tmpObj.pass = pool[opt]
-					} else {
-						tmpObj[opt] = pool[opt]
-					}
-				}
-				return tmpObj
-			};
-
 			let fmtPoolArray = [];
 			for (let pool of pools) {
-				fmtPoolArray.push(fmtPool(serPool(pool)))
+				fmtPoolArray.push(fmtPool(serPool(pool), vorpal))
 			}
 
 			self.log(vorpal.chalk.white('Your pools across all market providers: '))
@@ -61,7 +39,7 @@ export default function(vorpal, options){
 			let chosenPool = pool.pool;
 			let poolObj = {};
 			for (let pool of pools) {
-				poolObj[fmtPool(serPool(pool))] = pool.id
+				poolObj[fmtPool(serPool(pool), vorpal)] = pool.id
 			}
 			let poolid = poolObj[chosenPool];
 
