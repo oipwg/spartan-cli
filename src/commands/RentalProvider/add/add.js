@@ -50,6 +50,7 @@ export default function(vorpal, options){
 			// this.log(vorpal.chalk.green('Setup success: \n',JSON.stringify(setup_success.pools, null, 4)));
 
 			if (setup_success.success){
+				spartan.returnPools();
 				this.log(vorpal.chalk.green("Successfully added new Rental Provider!\n"));
 				if (setup_success.type === 'MiningRigRentals') {
 					//if user has no pools, prompt to create one
@@ -77,9 +78,9 @@ export default function(vorpal, options){
 							}
 						}
 					} else {
-						let addOrCreatePool = await Prompt_AddOrCreatePool(self, vorpal);
+						let addOrCreatePool = await Prompt_AddOrCreatePool(self, vorpal, setup_success.provider);
 
-						if (addOrCreatePool.option === 'add') {
+						if (addOrCreatePool.option === 'select') {
 							let poolProfiles = setup_success.poolProfiles;
 
 							let profileArray = [];
@@ -92,12 +93,12 @@ export default function(vorpal, options){
 							for (let id of profileIDs) {
 								if (poolToAdd.option.includes(id)) {
 									setup_success.provider.setActivePoolProfile(id)
-									const len = poolProfiles.length
-									for (let i = 0; i < len; i++) {
-										if (poolProfiles[i].id === id) {
-											setup_success.provider.addPoolProfiles(poolProfiles[i])
-										}
-									}
+									// const len = poolProfiles.length
+									// for (let i = 0; i < len; i++) {
+									// 	if (poolProfiles[i].id === id) {
+									// 		setup_success.provider.addPoolProfiles(poolProfiles[i])
+									// 	}
+									// }
 								}
 							}
 							spartan.serialize()
@@ -130,7 +131,7 @@ export default function(vorpal, options){
  					}
 				}
 				if (setup_success.type === 'NiceHash') {
-					let poolOptions = await Prompt_AddOrCreatePool(self, vorpal);
+					let poolOptions = await Prompt_AddOrCreatePool(self, vorpal, setup_success.provider);
 					if (poolOptions.option === 'add') {
 
 						let poolArray = await spartan.returnPools();
