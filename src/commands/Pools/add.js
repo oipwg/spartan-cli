@@ -1,5 +1,3 @@
-import {Prompt_AddPool} from "../RentalProvider/add/promptFunctions";
-
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
 
