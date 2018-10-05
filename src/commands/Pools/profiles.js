@@ -331,5 +331,6 @@ export default function(vorpal, options){
 					}
 				}
 			}
+			spartan.serialize()
 		});
 }
