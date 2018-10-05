@@ -1,5 +1,5 @@
 import {Prompt_CreatePoolProfile} from "../RentalProvider/add/promptFunctions";
-import {fmtPool} from "../../utils";
+import {fmtPool, serPool} from "../../utils";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
@@ -11,7 +11,7 @@ export default function(vorpal, options){
 		.action(async function(args) {
 			const self = this;
 			if (spartan.getRentalProviders().length === 0) {
-				self.log(vorpal.chalk.red(`No rental providers found! Consider adding one by typing: rentalprovider add`));
+				self.log(vorpal.chalk.red(`No rental providers found. To add one: rentalprovider add`));
 				return;
 			}
 			await spartan._deserialize
@@ -37,6 +37,8 @@ export default function(vorpal, options){
 				choices: [...providerArray, 'exit/return']
 			})
 			let selection = providerPrompt.provider
+			if (selection === 'exit/return')
+				return
 			let uid = providerObject[selection]
 			let _prov;
 			for (let p of spartan.getRentalProviders()) {
@@ -114,13 +116,47 @@ export default function(vorpal, options){
 				}
 
 				if (command === 'List Pools') {
+					if (!_profile.pools || (_profile.pools && _profile.pools.length === 0)) {
+						let commandOpt = await self.prompt({
+							type: 'confirm',
+							message: vorpal.chalk.yellow(`No pools found. Would you like to add one?`),
+							default: true,
+							name: 'confirm'
+						})
+						let confirm = commandOpt.confirm
+						if (!confirm)
+							return
+						if (confirm) {
+							//ToDo: Create pool
+							//ToDo: add that pool to profile
+						}
+						return
+					}
 					let profilePools = _profile.pools
+
+					let allPools;
+					try {
+						allPools = await _prov.getPools()
+					} catch (err) {
+						throw new Error('Failed to get pools: ${err}')
+					}
+
+					let pA = []
+					for (let pool of profilePools) {
+						for (let p of allPools) {
+							if (pool.host === p.host && pool.user === p.user && pool.port === p.port && pool.pass === p.pass) {
+								pA.push({...pool, name: p.name, id: p.id})
+							}
+
+						}
+					}
+
 					let poolArray = []
 					let poolObject = {}
-					for (let pool of profilePools) {
-						let fmtPool = fmtPool(serPool(pool), vorpal)
-						poolArray.push(fmtPool)
-						poolObject[fmtPool] = pool.id
+					for (let pool of pA) {
+						let formattedPool = fmtPool(serPool(pool), vorpal)
+						poolArray.push(formattedPool)
+						poolObject[formattedPool] = pool.id
 					}
 
 					let promptPools = await self.prompt({
@@ -130,6 +166,8 @@ export default function(vorpal, options){
 						choices: [...poolArray, 'exit/return']
 					})
 					let poolString = promptPools.option
+					if (poolString === 'exit/return')
+						return
 					let poolid = poolObject[poolString]
 					let _pool;
 					for (let pool of profilePools) {
@@ -147,11 +185,10 @@ export default function(vorpal, options){
 
 					if (command === 'SetPriority') {
 						//ToDo
-						console.log(_pool)
 					}
 
 					if (command === 'Delete') {
-						console.log(_pool)
+						//ToDo
 					}
 
 					if (command === 'exit/return')
@@ -182,13 +219,11 @@ export default function(vorpal, options){
 			if (opt === 'Create Pool Profile') {
 				let poolData;
 				let poolInfo = await Prompt_CreatePoolProfile(self, vorpal, spartan);
-				console.log('poolinfo: ', poolInfo)
 				try {
 					poolData = await _prov.createPoolAndProfile(poolInfo);
 				} catch (err) {
 					self.log(`Error while creating the profile: ${err}`)
 				}
-				console.log('pool data: ', poolData)
 
 				if (poolData && poolData.success && poolData.success.success) {
 					_prov.setActivePoolProfile(poolData.profileID)
@@ -205,9 +240,5 @@ export default function(vorpal, options){
 					}
 				}
 			}
-
-
-
-
 		});
 }
