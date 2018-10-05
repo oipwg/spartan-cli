@@ -1,4 +1,4 @@
-import {Prompt_CreatePoolProfile} from "../RentalProvider/add/promptFunctions";
+import {Prompt_CreateMRRPool, Prompt_CreatePoolProfile} from "../RentalProvider/add/promptFunctions";
 import {fmtPool, serPool} from "../../utils";
 
 export default function(vorpal, options){
@@ -141,11 +141,12 @@ export default function(vorpal, options){
 						throw new Error('Failed to get pools: ${err}')
 					}
 
-					let pA = []
+					//add name and id to pool that was returned on profile
+					let newPoolArray = []
 					for (let pool of profilePools) {
 						for (let p of allPools) {
 							if (pool.host === p.host && pool.user === p.user && pool.port === p.port && pool.pass === p.pass) {
-								pA.push({...pool, name: p.name, id: p.id})
+								newPoolArray.push({...pool, name: p.name, id: p.id})
 							}
 
 						}
@@ -153,7 +154,7 @@ export default function(vorpal, options){
 
 					let poolArray = []
 					let poolObject = {}
-					for (let pool of pA) {
+					for (let pool of newPoolArray) {
 						let formattedPool = fmtPool(serPool(pool), vorpal)
 						poolArray.push(formattedPool)
 						poolObject[formattedPool] = pool.id
@@ -168,9 +169,13 @@ export default function(vorpal, options){
 					let poolString = promptPools.option
 					if (poolString === 'exit/return')
 						return
+
 					let poolid = poolObject[poolString]
+
+
 					let _pool;
-					for (let pool of profilePools) {
+					for (let pool of newPoolArray) {
+
 						if (pool.id === poolid)
 							_pool = pool
 					}
@@ -183,12 +188,53 @@ export default function(vorpal, options){
 					})
 					let command = poolCommand.option;
 
-					if (command === 'SetPriority') {
-						//ToDo
+					//on _pool
+					if (command === 'Set Priority') {
+						let priorityPrompt = await self.prompt({
+							type: 'list',
+							name: 'option',
+							message: 'Select an option: ',
+							choices: ['0', '1', '2', '3', '4']
+						})
+						let priority = priorityPrompt.option
+
+						let poolAPIObj = {profileID, poolid: _pool.id, algo: _pool.type, name: _pool.name, priority}
+						console.log('poool : ', poolAPIObj)
+						let res;
+						try {
+							res = await _prov.updatePoolOnProfile(poolAPIObj)
+						} catch (err) {
+							throw new Error(`Failed to set priority on pool: ${err}`)
+						}
+						if (res.success)
+							self.log(vorpal.chalk.green(`Updated pool priority!`))
+						return
 					}
 
 					if (command === 'Delete') {
-						//ToDo
+						let confirm = await self.prompt({
+							type: 'confirm',
+							message: 'Are you sure you want to delete this pool?',
+							name: 'confirm',
+							default: true
+						})
+						let comf = confirm.confirm
+
+						if (!comf)
+							return
+						if (comf) {
+							let res;
+							try {
+								res = await _prov.deletePool(_pool.id)
+							} catch (err) {
+								throw new Error(`Failed to delete pool`)
+							}
+							if (res.success)
+								self.log(vorpal.chalk.green(JSON.stringify(res, null, 4)))
+							if (!res.success)
+								self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
+
+						}
 					}
 
 					if (command === 'exit/return')
@@ -198,6 +244,30 @@ export default function(vorpal, options){
 
 				if (command === 'Create Pool') {
 					//ToDo
+					let poolOptions = await Prompt_CreateMRRPool(self, vorpal, spartan)
+					console.log('initial pool options: ', poolOptions)
+					let res;
+					try {
+						res = await _prov._createPool(poolOptions)
+					} catch (err) {
+						throw new Error(`Failed to create a pool: ${err}`)
+					}
+					self.log(vorpal.chalk.blue('Created Pool!'))
+					console.log('pool created: ', res)
+					if (res) {
+						let newPoolObj = {profileID, poolid: res.mrrID, priority: 0, algo: res.type, name: res.name}
+						console.log('new pool obj: ', newPoolObj)
+						let addPoolToProfile
+						try {
+							addPoolToProfile = await _prov.addPoolToProfile(newPoolObj)
+						} catch (err) {
+							throw new Error(`Failed to add pool to profile: ${err}`)
+						}
+						if (addPoolToProfile.success)
+							self.log(vorpal.chalk.green(JSON.stringify, null, 4))
+						if (!addPoolToProfile.success)
+							self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
+					}
 				}
 
 				if (command === 'Delete') {

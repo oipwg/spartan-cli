@@ -74,6 +74,70 @@ export const Prompt_AddPool = async (self, vorpal, poolArray) => {
 	});
 }
 
+export const Prompt_CreateMRRPool = async (self, vorpal, spartan) => {
+	let poolOptions = {};
+
+	let name = await self.prompt({
+		type: 'input',
+		name: 'name',
+		message: vorpal.chalk.yellow('Name: '),
+		default: uid()
+	});
+	poolOptions.name = name.name;
+
+	let type = await self.prompt({
+		type: 'input',
+		name: 'type',
+		message: vorpal.chalk.yellow('Algo (scrypt, x11, sha256, etc...): '),
+		default: 'scrypt'
+	});
+	poolOptions.type = type.type;
+
+	let host = await self.prompt({
+		type: 'input',
+		name: 'host',
+		message: vorpal.chalk.yellow('Input a host url: '),
+		default: 'snowflake.oip.fun'
+	});
+	poolOptions.host = host.host;
+
+	let port = await self.prompt({
+		type: 'input',
+		name: 'port',
+		message: vorpal.chalk.yellow('Input a port to mine on: '),
+		default: 3043
+	});
+	poolOptions.port = port.port;
+
+	let user = await self.prompt({
+		type: 'input',
+		name: 'user',
+		message: vorpal.chalk.yellow('Input a wallet address to receive funds at: '),
+		description: 'Your workname',
+		default: spartan.wallet.wallet.coins['flo'].getMainAddress().getPublicAddress()
+	});
+	poolOptions.user = user.user;
+
+	let pass = await self.prompt({
+		type: 'input',
+		name: 'pass',
+		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add a password: `),
+		default: 'x'
+	});
+	poolOptions.pass = pass.pass;
+
+	let notes = await self.prompt({
+		type: 'input',
+		name: 'notes',
+		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add any additional notes: `),
+		default: `Created at ${Date.now()}`
+	});
+	poolOptions.notes = notes.notes;
+
+	return poolOptions
+
+}
+
 export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 	let poolOptions = {};
 	let profileName = await self.prompt({
@@ -131,7 +195,7 @@ export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 		message: vorpal.chalk.yellow(`${vorpal.chalk.red('Optional')} add a password: `),
 		default: 'x'
 	});
-	poolOptions.notes = pass.pass;
+	poolOptions.pass = pass.pass;
 
 	let notes = await self.prompt({
 		type: 'input',
