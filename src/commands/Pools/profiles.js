@@ -127,8 +127,30 @@ export default function(vorpal, options){
 						if (!confirm)
 							return
 						if (confirm) {
-							//ToDo: Create pool
-							//ToDo: add that pool to profile
+							let poolOptions = await Prompt_CreateMRRPool(self, vorpal, spartan)
+
+							let res;
+							try {
+								res = await _prov._createPool(poolOptions)
+							} catch (err) {
+								throw new Error(`Failed to create a pool: ${err}`)
+							}
+							self.log(vorpal.chalk.blue('Created Pool!'))
+
+							if (res) {
+								let newPoolObj = {profileID, poolid: res.mrrID, priority: 0, algo: res.type, name: res.name}
+
+								let addPoolToProfile
+								try {
+									addPoolToProfile = await _prov.addPoolToProfile(newPoolObj)
+								} catch (err) {
+									throw new Error(`Failed to add pool to profile: ${err}`)
+								}
+								if (addPoolToProfile.success)
+									self.log(vorpal.chalk.green(JSON.stringify(addPoolToProfile, null, 4)))
+								if (!addPoolToProfile.success)
+									self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
+							}
 						}
 						return
 					}
@@ -243,9 +265,8 @@ export default function(vorpal, options){
 				}
 
 				if (command === 'Create Pool') {
-					//ToDo
 					let poolOptions = await Prompt_CreateMRRPool(self, vorpal, spartan)
-					console.log('initial pool options: ', poolOptions)
+
 					let res;
 					try {
 						res = await _prov._createPool(poolOptions)
@@ -253,10 +274,10 @@ export default function(vorpal, options){
 						throw new Error(`Failed to create a pool: ${err}`)
 					}
 					self.log(vorpal.chalk.blue('Created Pool!'))
-					console.log('pool created: ', res)
+
 					if (res) {
 						let newPoolObj = {profileID, poolid: res.mrrID, priority: 0, algo: res.type, name: res.name}
-						console.log('new pool obj: ', newPoolObj)
+
 						let addPoolToProfile
 						try {
 							addPoolToProfile = await _prov.addPoolToProfile(newPoolObj)
@@ -264,7 +285,7 @@ export default function(vorpal, options){
 							throw new Error(`Failed to add pool to profile: ${err}`)
 						}
 						if (addPoolToProfile.success)
-							self.log(vorpal.chalk.green(JSON.stringify, null, 4))
+							self.log(vorpal.chalk.green(JSON.stringify(addPoolToProfile, null, 4)))
 						if (!addPoolToProfile.success)
 							self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
 					}
