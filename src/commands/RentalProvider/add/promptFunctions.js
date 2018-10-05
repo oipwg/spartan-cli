@@ -87,7 +87,7 @@ export const Prompt_CreatePoolProfile = async (self, vorpal, spartan) => {
 	let algo = await self.prompt({
 		type: 'input',
 		name: 'algo',
-		message: vorpal.chalk.yellow('Input an algorithm to mine with (scrypt, x11, sha256, etc...) : '),
+		message: vorpal.chalk.yellow('Input an algorithm to mine with (scrypt, x11, sha256, etc...): '),
 		default: 'scrypt'
 	});
 	poolOptions.algo = algo.algo;
