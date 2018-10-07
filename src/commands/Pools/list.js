@@ -175,7 +175,7 @@ export default function(vorpal, options){
 									throw new Error(`Failed to add pool to profile: ${err}`)
 								}
 								if (res.success) {
-									self.log(vorpal.chalk.green(JSON.stringify(res, null, 4)))
+									self.log(vorpal.chalk.green(`Pool added!`))
 								} else {
 									self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
 								}
