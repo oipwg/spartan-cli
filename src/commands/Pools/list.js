@@ -77,13 +77,13 @@ export default function(vorpal, options){
 				let typePrompt = function(){};
 				while (typePrompt.option !== Done) {
 
-					let type = `Type: ${poolV2.type} `
-					let name = `Name: ${poolV2.name} `
-					let host = `Host: ${poolV2.host} `
-					let port = `Port: ${poolV2.host} `
-					let user = `User: ${poolV2.user} `
-					let pass = `Pass: ${poolV2.pass} `
-					let notes = `Notes: ${poolV2.notes} `
+					let type = `type: ${poolV2.type} `
+					let name = `name: ${poolV2.name} `
+					let host = `host: ${poolV2.host} `
+					let port = `port: ${poolV2.port} `
+					let user = `user: ${poolV2.user} `
+					let pass = `pass: ${poolV2.pass} `
+					let notes = `notes: ${poolV2.notes} `
 
 					typePrompt = await self.prompt({
 						type: 'list',
@@ -94,46 +94,49 @@ export default function(vorpal, options){
 					let option = typePrompt.option
 					let param = option.split(":")[0].toLowerCase()
 
-					let updatePrompt = await self.prompt({
-						type: 'input',
-						message: vorpal.chalk.yellow(option),
-						name: 'input'
-					})
+					if (option === Done) {
 
-					// console.log(`param: ${param}. poolv2: ${JSON.stringify(poolV2)}. updated: ${updatePrompt.input}`)
-					poolV2[param] = updatePrompt.input
-				}
-				if (typePrompt.option === Done) {
-					console.log('Done here now')
-					let exactMatch = true;
-					for (let opt in poolV2) {
-						for (let _opt in _pool) {
-							if (opt === _opt) {
-								if (poolV2[opt] !== _pool[_opt]) {
-									exactMatch = false
+						console.log('Done here now')
+						let exactMatch = true;
+						for (let opt in poolV2) {
+							for (let _opt in _pool) {
+								if (opt === _opt) {
+									if (poolV2[opt] !== _pool[_opt]) {
+										exactMatch = false
+									}
 								}
 							}
 						}
+						if (exactMatch) {
+							self.log(vorpal.chalk.yellow('No changes. Exiting...'))
+						} else {
+							//make changes to api call
+							//account for multiple providers not having access to the same pool
+							for (let provider of providers) {
+								let res;
+								try {
+									res = await provider.updatePool(poolV2)
+								} catch (err) {
+									res = err
+								}
+								console.log(res)
+								if (res)
+									vorpal.chalk.yellow(`Provider: ${provider.getName() || provider.getUID()} successfully updated its pool: ${res}`)
+								if (!res)
+									vorpal.chalk.red(`Provider: ${provider.getName() || provider.getUID()} failed to update its pool: ${res}`)
+							}
+							return
+						}
 					}
-					if (exactMatch) {
-						self.log(vorpal.chalk.yellow('No changes. Exiting...'))
-					} else {
-						//make changes to api call
-						//account for multiple providers not having access to the same pool
-					}
-				}
 
-				for (let provider of providers) {
-					let res;
-					try {
-						res = await provider.updatePool()
-					} catch (err) {
-						res = err
-					}
-					if (res.success)
-						vorpal.chalk.yellow(`Provider: ${provider.getName() || provider.getUID()} successfully updated its pool`)
-					if (!res.success)
-						vorpal.chalk.red(`Provider: ${provider.getName() || provider.getUID()} failed to update its pool: ${res}`)
+					let updatePrompt = await self.prompt({
+						type: 'input',
+						message: vorpal.chalk.yellow(` ${param} `),
+						name: 'input',
+						default: poolV2[param]
+					})
+
+					poolV2[param] = updatePrompt.input
 				}
 
 				spartan.serialize()
