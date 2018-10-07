@@ -171,9 +171,8 @@ export default function(vorpal, options){
 					for (let pool of profilePools) {
 						for (let p of allPools) {
 							if (pool.host === p.host && pool.user === p.user && pool.port === p.port && pool.pass === p.pass) {
-								newPoolArray.push({...pool, name: p.name, id: p.id})
+								newPoolArray.push({...pool, name: p.name, id: p.id, priority: pool.priority})
 							}
-
 						}
 					}
 
@@ -197,10 +196,8 @@ export default function(vorpal, options){
 
 					let poolid = poolObject[poolString]
 
-
 					let _pool;
 					for (let pool of newPoolArray) {
-
 						if (pool.id === poolid)
 							_pool = pool
 					}
@@ -311,7 +308,7 @@ export default function(vorpal, options){
 						throw new Error(`Failed to add pool to profile: ${err}`)
 					}
 					if (res.success) {
-						self.log(vorpal.chalk.green(`Pool added!`)))
+						self.log(vorpal.chalk.green(`Pool added!`))
 					} else {
 						self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
 					}
