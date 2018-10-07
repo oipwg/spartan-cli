@@ -57,12 +57,88 @@ export default function(vorpal, options){
 				type: 'list',
 				message: vorpal.chalk.yellow('Choose an option:'),
 				name: 'choice',
-				choices: ['Set to Active', 'Delete', exit]
+				choices: ['Update', 'Set to Active', 'Delete', exit]
 			})
 			let chosenCommand = promptPoolCommands.choice;
 
 			if (chosenCommand === exit)
 				return
+
+			if (chosenCommand === 'Update') {
+				console.log(_pool)
+				let providers = spartan.getRentalProviders()
+
+				let poolV2 = {}
+				for (let opt in _pool) {
+					poolV2[opt] = _pool[opt]
+				}
+
+				const Done = vorpal.chalk.red(`Done`)
+				let typePrompt = function(){};
+				while (typePrompt.option !== Done) {
+
+					let type = `Type: ${poolV2.type} `
+					let name = `Name: ${poolV2.name} `
+					let host = `Host: ${poolV2.host} `
+					let port = `Port: ${poolV2.host} `
+					let user = `User: ${poolV2.user} `
+					let pass = `Pass: ${poolV2.pass} `
+					let notes = `Notes: ${poolV2.notes} `
+
+					typePrompt = await self.prompt({
+						type: 'list',
+						message: vorpal.chalk.yellow('Select an option:'),
+						name: 'option',
+						choices: [type, name, host, port, user, pass, notes, Done]
+					})
+					let option = typePrompt.option
+					let param = option.split(":")[0].toLowerCase()
+
+					let updatePrompt = await self.prompt({
+						type: 'input',
+						message: vorpal.chalk.yellow(option),
+						name: 'input'
+					})
+
+					// console.log(`param: ${param}. poolv2: ${JSON.stringify(poolV2)}. updated: ${updatePrompt.input}`)
+					poolV2[param] = updatePrompt.input
+				}
+				if (typePrompt.option === Done) {
+					console.log('Done here now')
+					let exactMatch = true;
+					for (let opt in poolV2) {
+						for (let _opt in _pool) {
+							if (opt === _opt) {
+								if (poolV2[opt] !== _pool[_opt]) {
+									exactMatch = false
+								}
+							}
+						}
+					}
+					if (exactMatch) {
+						self.log(vorpal.chalk.yellow('No changes. Exiting...'))
+					} else {
+						//make changes to api call
+						//account for multiple providers not having access to the same pool
+					}
+				}
+
+				for (let provider of providers) {
+					let res;
+					try {
+						res = await provider.updatePool()
+					} catch (err) {
+						res = err
+					}
+					if (res.success)
+						vorpal.chalk.yellow(`Provider: ${provider.getName() || provider.getUID()} successfully updated its pool`)
+					if (!res.success)
+						vorpal.chalk.red(`Provider: ${provider.getName() || provider.getUID()} failed to update its pool: ${res}`)
+				}
+
+				spartan.serialize()
+				return
+			}
 
 			if (chosenCommand === 'Set to Active') {
 				//set pool to top priorty under active profile for mrr
