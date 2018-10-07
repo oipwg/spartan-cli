@@ -88,14 +88,12 @@ export default function(vorpal, options){
 						type: 'list',
 						message: vorpal.chalk.yellow('Select an option:'),
 						name: 'option',
-						choices: [type, name, host, port, user, pass, notes, Done]
+						choices: [name, host, port, user, pass, notes, Done]
 					})
 					let option = typePrompt.option
 					let param = option.split(":")[0].toLowerCase()
 
 					if (option === Done) {
-
-						console.log('Done here now')
 						let exactMatch = true;
 						for (let opt in poolV2) {
 							for (let _opt in _pool) {
@@ -109,8 +107,7 @@ export default function(vorpal, options){
 						if (exactMatch) {
 							self.log(vorpal.chalk.yellow('No changes. Exiting...'))
 						} else {
-							console.log('original pool: ', _pool)
-							console.log('new pool: ', poolV2)
+							//ToDo: TYPE ISN"T CHANGIN
 							//make changes to api call
 							//account for multiple providers not having access to the same pool
 							let updateRes
