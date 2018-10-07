@@ -38,6 +38,9 @@ export default function(vorpal, options){
 			});
 
 			let chosenPool = promptPools.choice;
+			if (chosenPool === exit)
+				return
+
 			let poolObj = {};
 			for (let pool of _pools) {
 				poolObj[fmtPool(serPool(pool), vorpal)] = pool.id
@@ -49,9 +52,6 @@ export default function(vorpal, options){
 					_pool = pool
 				}
 			}
-
-			if (chosenPool === exit)
-				return
 
 			let promptPoolCommands = await self.prompt({
 				type: 'list',

@@ -10,6 +10,8 @@ export default function(vorpal, options){
 		.alias('pp')
 		.action(async function(args) {
 			const self = this;
+			const exit = vorpal.chalk.red(`exit`)
+
 			if (spartan.getRentalProviders().length === 0) {
 				self.log(vorpal.chalk.red(`No rental providers found. To add one: rentalprovider add`));
 				return;
@@ -103,7 +105,7 @@ export default function(vorpal, options){
 					type: 'list',
 					name: 'option',
 					message: vorpal.chalk.yellow('Select a command: '),
-					choices: ['Set to Active', 'List Pools', 'Create Pool', 'Delete', 'exit/return']
+					choices: ['Set to Active', 'List Pools', 'Add Pool', 'Create Pool', 'Delete', 'exit/return']
 				})
 				let command = profileCommand.option
 
@@ -262,7 +264,58 @@ export default function(vorpal, options){
 
 					if (command === 'exit')
 						return
+				}
 
+				if (command === 'Add Pool') {
+					//fetch all the pools
+					let _pools;
+					try {
+						_pools = await spartan.getPools()
+					} catch (err) {
+						self.log(vorpal.chalk.red("Failed to get pools from MRR API: ", err))
+						return
+					}
+
+					let fmtPoolArray = [];
+					for (let pool of _pools) {
+						fmtPoolArray.push(fmtPool(serPool(pool), vorpal))
+					}
+
+					let promptPools = await self.prompt({
+						type: 'list',
+						message: 'Select a pool:',
+						name: 'choice',
+						choices: [...fmtPoolArray, exit]
+					});
+
+					let chosenPool = promptPools.choice;
+					if (chosenPool === exit)
+						return
+
+					let poolObj = {};
+					for (let pool of _pools) {
+						poolObj[fmtPool(serPool(pool), vorpal)] = pool.id
+					}
+					let poolid = poolObj[chosenPool];
+					let _pool;
+					for (let pool of _pools) {
+						if (pool.id === poolid) {
+							_pool = pool
+						}
+					}
+
+					let poolObject = {poolid: _pool.mrrID || _pool.id, algo: _pool.type, name: _pool.name, priority: 4, profileID: _profile.id}
+					let res;
+					try {
+						res = await  _prov.addPoolToProfile(poolObject)
+					} catch (err) {
+						throw new Error(`Failed to add pool to profile: ${err}`)
+					}
+					if (res.success) {
+						self.log(vorpal.chalk.green(JSON.stringify(res, null, 4)))
+					} else {
+						self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
+					}
 				}
 
 				if (command === 'Create Pool') {
