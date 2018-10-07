@@ -116,10 +116,11 @@ export default function(vorpal, options){
 				}
 
 				if (command === 'List Pools') {
+					//ToDo: sort by priority
 					if (!_profile.pools || (_profile.pools && _profile.pools.length === 0)) {
 						let commandOpt = await self.prompt({
 							type: 'confirm',
-							message: vorpal.chalk.yellow(`No pools found. Would you like to add one?`),
+							message: vorpal.chalk.yellow(`No pools found. Would you like to create one?`),
 							default: true,
 							name: 'confirm'
 						})
@@ -181,7 +182,7 @@ export default function(vorpal, options){
 						poolArray.push(formattedPool)
 						poolObject[formattedPool] = pool.id
 					}
-
+					self.log(vorpal.chalk.yellow(`These are the pools on this profile`))
 					let promptPools = await self.prompt({
 						type: 'list',
 						message: vorpal.chalk.yellow('Select a pool: '),
@@ -206,7 +207,7 @@ export default function(vorpal, options){
 						type: 'list',
 						name: 'option',
 						message: vorpal.chalk.yellow('Select a command: '),
-						choices: ['Set Priority', 'Delete', 'exit/return']
+						choices: ['Set Priority', 'Delete', 'exit']
 					})
 					let command = poolCommand.option;
 
@@ -221,7 +222,7 @@ export default function(vorpal, options){
 						let priority = priorityPrompt.option
 
 						let poolAPIObj = {profileID, poolid: _pool.id, algo: _pool.type, name: _pool.name, priority}
-						console.log('poool : ', poolAPIObj)
+
 						let res;
 						try {
 							res = await _prov.updatePoolOnProfile(poolAPIObj)
@@ -240,11 +241,11 @@ export default function(vorpal, options){
 							name: 'confirm',
 							default: true
 						})
-						let comf = confirm.confirm
+						let confirmation = confirm.confirm
 
-						if (!comf)
+						if (!confirmation)
 							return
-						if (comf) {
+						if (confirmation) {
 							let res;
 							try {
 								res = await _prov.deletePool(_pool.id)
@@ -259,7 +260,7 @@ export default function(vorpal, options){
 						}
 					}
 
-					if (command === 'exit/return')
+					if (command === 'exit')
 						return
 
 				}
@@ -276,7 +277,7 @@ export default function(vorpal, options){
 					self.log(vorpal.chalk.blue('Created Pool!'))
 
 					if (res) {
-						let newPoolObj = {profileID, poolid: res.mrrID, priority: 0, algo: res.type, name: res.name}
+						let newPoolObj = {profileID, poolid: res.mrrID, priority: 4, algo: res.type, name: res.name}
 
 						let addPoolToProfile
 						try {

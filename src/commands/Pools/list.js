@@ -57,7 +57,7 @@ export default function(vorpal, options){
 				type: 'list',
 				message: vorpal.chalk.yellow('Choose an option:'),
 				name: 'choice',
-				choices: ['Update', 'Set to Active', 'Delete', exit]
+				choices: ['Update', 'Add to MRR Profile', 'Set to Active', 'Delete', exit]
 			})
 			let chosenCommand = promptPoolCommands.choice;
 
@@ -76,7 +76,7 @@ export default function(vorpal, options){
 				let typePrompt = function(){};
 				while (typePrompt.option !== Done) {
 
-					let type = `type: ${poolV2.type} `
+					// let type = `type: ${poolV2.type} `
 					let name = `name: ${poolV2.name} `
 					let host = `host: ${poolV2.host} `
 					let port = `port: ${poolV2.port} `
@@ -107,8 +107,6 @@ export default function(vorpal, options){
 						if (exactMatch) {
 							self.log(vorpal.chalk.yellow('No changes. Exiting...'))
 						} else {
-							//ToDo: TYPE ISN"T CHANGIN
-							//make changes to api call
 							//account for multiple providers not having access to the same pool
 							let updateRes
 							try {
@@ -131,6 +129,60 @@ export default function(vorpal, options){
 
 				spartan.serialize()
 				return
+			}
+
+			if (chosenCommand === 'Add to MRR Profile') {
+				let poolProfiles = []
+				for (let provider of spartan.getRentalProviders()) {
+					if (provider.getInternalType() === "MiningRigRentals") {
+						let res;
+						try {
+							res = await provider.getPoolProfiles()
+						} catch (err) {
+							throw new Error(`Failed to fetch pool profiles: ${err}`)
+						}
+
+						if (res.success) {
+							for (let profile of res.data) {
+								poolProfiles.push(profile)
+							}
+						}
+					}
+				}
+
+				let promptProfiles = await self.prompt({
+					type: 'list',
+					message: 'Select a profile',
+					name: 'option',
+					choices: [...poolProfiles, 'exit']
+				})
+				let profileName = promptProfiles.option
+				let profileID;
+				for (let profile of poolProfiles) {
+					if (profile.name === profileName) {
+						profileID = profile.id
+					}
+				}
+				let poolObject = {poolid: _pool.mrrID || _pool.id, algo: _pool.type, name: _pool.name, priority: 4, profileID}
+				for (let provider of spartan.getRentalProviders()) {
+					if (provider.getInternalType() === "MiningRigRentals") {
+						for (let profile of provider.returnPoolProfiles()) {
+							if (profile.id === profileID) {
+								let res;
+								try {
+									res = await  provider.addPoolToProfile(poolObject)
+								} catch (err) {
+									throw new Error(`Failed to add pool to profile: ${err}`)
+								}
+								if (res.success) {
+									self.log(vorpal.chalk.green(JSON.stringify(res, null, 4)))
+								} else {
+									self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
+								}
+							}
+						}
+					}
+				}
 			}
 
 			if (chosenCommand === 'Set to Active') {
