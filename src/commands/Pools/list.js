@@ -65,7 +65,6 @@ export default function(vorpal, options){
 				return
 
 			if (chosenCommand === 'Update') {
-				console.log(_pool)
 				let providers = spartan.getRentalProviders()
 
 				let poolV2 = {}
@@ -110,22 +109,16 @@ export default function(vorpal, options){
 						if (exactMatch) {
 							self.log(vorpal.chalk.yellow('No changes. Exiting...'))
 						} else {
+							console.log('original pool: ', _pool)
+							console.log('new pool: ', poolV2)
 							//make changes to api call
 							//account for multiple providers not having access to the same pool
-							for (let provider of providers) {
-								let res;
-								try {
-									res = await provider.updatePool(poolV2)
-								} catch (err) {
-									res = err
-								}
-								console.log(res)
-								if (res)
-									vorpal.chalk.yellow(`Provider: ${provider.getName() || provider.getUID()} successfully updated its pool: ${res}`)
-								if (!res)
-									vorpal.chalk.red(`Provider: ${provider.getName() || provider.getUID()} failed to update its pool: ${res}`)
+							let updateRes
+							try {
+								updateRes = await spartan.updatePool(_pool.id, poolV2)
+							} catch (err) {
+								throw new Error(`Failed to update pool: ${err}`)
 							}
-							return
 						}
 					}
 
