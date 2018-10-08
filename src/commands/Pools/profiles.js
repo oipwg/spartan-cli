@@ -2,6 +2,8 @@ import {Prompt_CreateMRRPool, Prompt_CreatePoolProfile} from "../RentalProvider/
 import {fmtPool, serPool} from "../../utils";
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
 import {SetPoolPriority} from "./PoolFunctions/SetPoolPriority";
+import {ListPools} from "./PoolFunctions/ListPools";
+import {AddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
@@ -127,9 +129,9 @@ export default function(vorpal, options){
 					if (!_profile.pools || (_profile.pools && _profile.pools.length === 0)) {
 						let commandOpt = await self.prompt({
 							type: 'list',
-							message: vorpal.chalk.yellow(`No pools found. Create or add one.`),
+							message: vorpal.chalk.yellow(`No pools found. Create or add one:`),
 							name: 'option',
-							choices: ['Create', 'Add', exit]
+							choices: ['Add', 'Create', exit]
 						})
 						let command = commandOpt.option
 						if (command === exit)
@@ -162,7 +164,16 @@ export default function(vorpal, options){
 						}
 
 						if (command === 'Add') {
+							let pool = await ListPools(self, vorpal, spartan)
+							if (pool === exit)
+								return
 
+							let addPool = await AddPoolToProfile(self, vorpal, pool, profileID, _prov)
+							if (addPool.success) {
+								self.log(vorpal.chalk.yellow(`Pool Added`))
+							} else {
+								self.log(vorpal.chalk.red('Failed to add pool'))
+							}
 						}
 						return
 					}
@@ -227,7 +238,7 @@ export default function(vorpal, options){
 
 					//on _pool
 					if (command === 'Set Priority') {
-						await SetPoolPriority(self, vorpal, spartan, profileID, _pool, _prov)
+						await SetPoolPriority(self, vorpal, profileID, _pool, _prov)
 					}
 
 					if (command === 'Delete') {
@@ -325,10 +336,18 @@ export default function(vorpal, options){
 					} catch (err) {
 						throw new Error(`Failed to create a pool: ${err}`)
 					}
-					self.log(vorpal.chalk.blue('Created Pool!'))
+					self.log('Pool Created Successfully')
+
+					let poolPriority = await self.prompt({
+						type: 'list',
+						message: vorpal.chalk.yellow(`Select pool priority:`),
+						name: 'option',
+						choices: ['0', '1', '2', '3', '4']
+					})
+					let priority = poolPriority.option
 
 					if (res) {
-						let newPoolObj = {profileID, poolid: res.mrrID, priority: 4, algo: res.type, name: res.name}
+						let newPoolObj = {profileID, poolid: res.mrrID, priority, algo: res.type, name: res.name}
 
 						let addPoolToProfile
 						try {
@@ -337,9 +356,9 @@ export default function(vorpal, options){
 							throw new Error(`Failed to add pool to profile: ${err}`)
 						}
 						if (addPoolToProfile.success)
-							self.log(vorpal.chalk.green(JSON.stringify(addPoolToProfile, null, 4)))
+							self.log(`Pool Added To Profile`)
 						if (!addPoolToProfile.success)
-							self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
+							self.log(vorpal.chalk.red('Failed to add pool to profile: ', JSON.stringify(addPoolToProfile, null, 4)))
 					}
 				}
 
@@ -352,7 +371,7 @@ export default function(vorpal, options){
 					}
 
 					if (res.success)
-						self.log(vorpal.chalk.yellow(`Deleted`))
+						self.log(vorpal.chalk.red(`Deleted`))
 					else
 						self.log(vorpal.chalk.red(`Failed to delete profile`))
 				}
@@ -376,7 +395,7 @@ export default function(vorpal, options){
 						}
 					}
 					spartan.serialize();
-					self.log(vorpal.chalk.green(`Profile successfully added`))
+					self.log(`Profile created successfully`)
 				} else {
 					if (poolData === null || poolData === undefined) {
 						self.log(vorpal.chalk.red(`Pool unsuccessfully added. Pool Data: ${poolData}`))

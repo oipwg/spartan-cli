@@ -1,5 +1,5 @@
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
-import {AddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
+import {PromptAddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
 import {ListPools} from "./PoolFunctions/ListPools";
 
 export default function(vorpal, options){
@@ -22,6 +22,8 @@ export default function(vorpal, options){
 			if (_pool === exit)
 				return
 
+			let poolid = _pool.mrrID ? _pool.mrrID : _pool.id
+
 			let promptPoolCommands = await self.prompt({
 				type: 'list',
 				message: vorpal.chalk.yellow('Choose an option:'),
@@ -38,7 +40,7 @@ export default function(vorpal, options){
 			}
 
 			if (chosenCommand === 'Add to MRR Profile') {
-				await AddPoolToProfile(self, vorpal, spartan, _pool)
+				await PromptAddPoolToProfile(self, vorpal, spartan, _pool)
 			}
 
 			if (chosenCommand === 'Set to Active') {

@@ -18,7 +18,7 @@ export const ListPools = async (self, vorpal, spartan) => {
 
 	let promptPools = await self.prompt({
 		type: 'list',
-		message: 'Select a pool to manage:',
+		message: 'Select a pool:',
 		name: 'choice',
 		choices: [...fmtPoolArray, exit]
 	});

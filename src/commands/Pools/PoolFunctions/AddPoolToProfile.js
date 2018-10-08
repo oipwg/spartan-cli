@@ -1,4 +1,4 @@
-export const AddPoolToProfile = async (self, vorpal, spartan, _pool) => {
+export const PromptAddPoolToProfile = async (self, vorpal, spartan, _pool) => {
 	let poolProfiles = []
 	for (let provider of spartan.getRentalProviders()) {
 		if (provider.getInternalType() === "MiningRigRentals") {
@@ -35,7 +35,7 @@ export const AddPoolToProfile = async (self, vorpal, spartan, _pool) => {
 
 	let poolPriority = await self.prompt({
 		type: 'list',
-		message: vorpal.chalk.yellow(`Select a pool priority:`),
+		message: vorpal.chalk.yellow(`Select priority:`),
 		name: 'option',
 		choices: ['0', '1', '2', '3', '4']
 	})
@@ -60,6 +60,35 @@ export const AddPoolToProfile = async (self, vorpal, spartan, _pool) => {
 						self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
 						return {success: false, error: res}
 					}
+				}
+			}
+		}
+	}
+}
+
+export const AddPoolToProfile = async (self, vorpal, pool, profileID, provider) => {
+	let poolObject = {poolid: pool.mrrID || pool.id, algo: pool.type, name: pool.name, priority: 0, profileID, provider}
+
+	if (provider) {
+		let res;
+		try {
+			res = await provider.addPoolToProfile(poolObject)
+		} catch (err) {
+			self.log(vorpal.chalk.red(`Failed to add pool to profile: ${JSON.stringify(err, null, 4)}`))
+		}
+		return res
+	} else {
+		let providers = spartan.getRentalProviders()
+		for (let provider of providers) {
+			for (let profile of provider.returnPoolProfiles()) {
+				if (profile.id === profileID) {
+					let res;
+					try {
+						res = await provider.addPoolToProfile(poolObject)
+					} catch (err) {
+						self.log(vorpal.chalk.red(`Failed to add pool to profile: ${JSON.stringify(err, null, 4)}`))
+					}
+					return res
 				}
 			}
 		}
