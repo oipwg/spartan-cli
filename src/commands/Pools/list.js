@@ -1,5 +1,6 @@
 import {serPool, fmtPool} from "../../utils";
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
+import {AddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
@@ -69,57 +70,7 @@ export default function(vorpal, options){
 			}
 
 			if (chosenCommand === 'Add to MRR Profile') {
-				let poolProfiles = []
-				for (let provider of spartan.getRentalProviders()) {
-					if (provider.getInternalType() === "MiningRigRentals") {
-						let res;
-						try {
-							res = await provider.getPoolProfiles()
-						} catch (err) {
-							throw new Error(`Failed to fetch pool profiles: ${err}`)
-						}
-
-						if (res.success) {
-							for (let profile of res.data) {
-								poolProfiles.push(profile)
-							}
-						}
-					}
-				}
-
-				let promptProfiles = await self.prompt({
-					type: 'list',
-					message: 'Select a profile',
-					name: 'option',
-					choices: [...poolProfiles, 'exit']
-				})
-				let profileName = promptProfiles.option
-				let profileID;
-				for (let profile of poolProfiles) {
-					if (profile.name === profileName) {
-						profileID = profile.id
-					}
-				}
-				let poolObject = {poolid: _pool.mrrID || _pool.id, algo: _pool.type, name: _pool.name, priority: 4, profileID}
-				for (let provider of spartan.getRentalProviders()) {
-					if (provider.getInternalType() === "MiningRigRentals") {
-						for (let profile of provider.returnPoolProfiles()) {
-							if (profile.id === profileID) {
-								let res;
-								try {
-									res = await  provider.addPoolToProfile(poolObject)
-								} catch (err) {
-									throw new Error(`Failed to add pool to profile: ${err}`)
-								}
-								if (res.success) {
-									self.log(vorpal.chalk.green(`Pool added!`))
-								} else {
-									self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
-								}
-							}
-						}
-					}
-				}
+				let addPool = await AddPoolToProfile(self, vorpal, spartan, _pool)
 			}
 
 			if (chosenCommand === 'Set to Active') {
