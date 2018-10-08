@@ -12,6 +12,6 @@ export default function(vorpal, options){
 			if (spartan.getRentalProviders().length === 0) {
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
-			await CreatePool(self, vorpal, spartan)
+			return await CreatePool(self, vorpal, spartan)
 		});
 }

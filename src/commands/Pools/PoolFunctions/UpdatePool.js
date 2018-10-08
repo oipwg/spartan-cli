@@ -37,7 +37,7 @@ export const UpdatePool = async (self, vorpal, spartan, _pool) => {
 				}
 			}
 			if (exactMatch) {
-				self.log(vorpal.chalk.yellow('No changes. Exiting...'))
+				return self.log(vorpal.chalk.yellow('No changes. Exiting...'))
 			} else {
 				//account for multiple providers not having access to the same pool
 				let updateRes
