@@ -59,5 +59,6 @@ export const UpdatePool = async (self, vorpal, spartan, _pool) => {
 	}
 
 	spartan.serialize()
+	self.log('Pool Updated')
 	return true
 }
