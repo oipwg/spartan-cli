@@ -152,7 +152,7 @@ export default function(vorpal, options){
 			if (chosenCommand === 'Delete') {
 				//remove pool across all providers
 				let success = await spartan.deletePool(poolid)
-				self.log('delete success', success)
+				self.log(vorpal.chalk.red('Deleted'))
 			}
 
 			spartan.serialize()
