@@ -1,6 +1,7 @@
 import {serPool, fmtPool} from "../../utils";
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
 import {AddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
+import {SetPoolPriority} from "./PoolFunctions/SetPoolPriority";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
@@ -70,7 +71,7 @@ export default function(vorpal, options){
 			}
 
 			if (chosenCommand === 'Add to MRR Profile') {
-				let addPool = await AddPoolToProfile(self, vorpal, spartan, _pool)
+				await AddPoolToProfile(self, vorpal, spartan, _pool)
 			}
 
 			if (chosenCommand === 'Set to Active') {
