@@ -51,7 +51,7 @@ export default function(vorpal, options){
 
 			if (setup_success.success){
 				spartan.returnPools();
-				this.log(vorpal.chalk.green("Successfully added new Rental Provider!\n"));
+				this.log(vorpal.chalk.white("Successfully added a new Rental Provider."));
 				if (setup_success.type === 'MiningRigRentals') {
 					//if user has no pools, prompt to create one
 					if (setup_success.poolProfiles.length === 0) {
