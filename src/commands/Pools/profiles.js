@@ -38,10 +38,10 @@ export default function(vorpal, options){
 				type: 'list',
 				message: vorpal.chalk.yellow('Choose a provider: '),
 				name: 'provider',
-				choices: [...providerArray, 'exit/return']
+				choices: [...providerArray, exit]
 			})
 			let selection = providerPrompt.provider
-			if (selection === 'exit/return')
+			if (selection === exit)
 				return
 			let uid = providerObject[selection]
 			let _prov;
@@ -54,9 +54,11 @@ export default function(vorpal, options){
 				type: 'list',
 				message: vorpal.chalk.yellow(`Select a command: `),
 				name: 'option',
-				choices: ['List Pool Profiles', 'Create Pool Profile']
+				choices: ['List Pool Profiles', 'Create Pool Profile', exit]
 			})
 			let opt = listOrCreate.option
+			if (opt === exit)
+				return
 
 			// --------------------------------------------------------------------------------------------------------
 			if (opt === 'List Pool Profiles') {
@@ -89,11 +91,11 @@ export default function(vorpal, options){
 					type: 'list',
 					name: 'profile',
 					message: vorpal.chalk.yellow('Choose a pool profile: '),
-					choices: [...profileNames, vorpal.chalk.red('exit/return')]
+					choices: [...profileNames, exit]
 				})
 				selection = profilePrompt.profile;
 
-				if (selection === vorpal.chalk.red('exit/return'))
+				if (selection === exit)
 					return
 
 				let profileID = profileObj[selection]
@@ -107,9 +109,11 @@ export default function(vorpal, options){
 					type: 'list',
 					name: 'option',
 					message: vorpal.chalk.yellow('Select a command: '),
-					choices: ['Set to Active', 'List Pools', 'Add Pool', 'Create Pool', 'Delete', 'exit/return']
+					choices: ['Set to Active', 'List Pools', 'Add Pool', 'Create Pool', 'Delete', exit]
 				})
 				let command = profileCommand.option
+				if (command === exit)
+					return
 
 				if (command === 'Set to Active') {
 					_prov.setActivePoolProfile(profileID)
@@ -190,10 +194,10 @@ export default function(vorpal, options){
 						type: 'list',
 						message: vorpal.chalk.yellow('Select a pool: '),
 						name: 'option',
-						choices: [...poolArray, 'exit/return']
+						choices: [...poolArray, exit]
 					})
 					let poolString = promptPools.option
-					if (poolString === 'exit/return')
+					if (poolString === exit)
 						return
 
 					let poolid = poolObject[poolString]
@@ -208,10 +212,10 @@ export default function(vorpal, options){
 						type: 'list',
 						name: 'option',
 						message: vorpal.chalk.yellow('Select a command: '),
-						choices: ['Update', 'Set Priority', 'Delete', 'exit']
+						choices: ['Update', 'Set Priority', 'Delete', exit]
 					})
 					let command = poolCommand.option;
-					if (command === 'exit')
+					if (command === exit)
 						return
 
 					if (command === 'Update') {
@@ -242,7 +246,7 @@ export default function(vorpal, options){
 								throw new Error(`Failed to delete pool`)
 							}
 							if (res.success)
-								self.log(vorpal.chalk.red('Deleted.'))
+								self.log(vorpal.chalk.red('Deleted'))
 							if (!res.success)
 								self.log(vorpal.chalk.red(`Failed to delete pool: `, JSON.stringify(res, null, 4)))
 
@@ -287,7 +291,15 @@ export default function(vorpal, options){
 						}
 					}
 
-					let poolObject = {poolid: _pool.mrrID || _pool.id, algo: _pool.type, name: _pool.name, priority: 4, profileID: _profile.id}
+					let poolPriority = await self.prompt({
+						type: 'list',
+						message: vorpal.chalk.yellow(`Select a pool priority:`),
+						name: 'option',
+						choices: ['0', '1', '2', '3', '4']
+					})
+					let priority = poolPriority.option
+
+					let poolObject = {poolid: _pool.mrrID || _pool.id, algo: _pool.type, name: _pool.name, priority, profileID: _profile.id}
 					let res;
 					try {
 						res = await  _prov.addPoolToProfile(poolObject)
@@ -295,7 +307,7 @@ export default function(vorpal, options){
 						throw new Error(`Failed to add pool to profile: ${err}`)
 					}
 					if (res.success) {
-						self.log(vorpal.chalk.green(`Pool added!`))
+						self.log(vorpal.chalk.yellow(`Pool Added`))
 					} else {
 						self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
 					}
@@ -337,7 +349,7 @@ export default function(vorpal, options){
 					}
 
 					if (res.success)
-						self.log(vorpal.chalk.yellow(`Delete Profile!`))
+						self.log(vorpal.chalk.yellow(`Deleted`))
 					else
 						self.log(vorpal.chalk.red(`Failed to delete profile`))
 				}
