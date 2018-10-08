@@ -14,11 +14,11 @@ export default function(vorpal, options){
 			const self = this;
 			const exit = vorpal.chalk.red(`exit`)
 
+			await spartan._deserialize
 			if (spartan.getRentalProviders().length === 0) {
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
 
-			await spartan._deserialize
 			self.log(vorpal.chalk.yellow('Manage pool profiles for your MiningRigRental providers: '))
 			let mrrProviders = []
 			for (let p of spartan.getRentalProviders()) {

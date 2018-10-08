@@ -9,6 +9,7 @@ export default function(vorpal, options){
 		.alias('pc')
 		.action(async function(args) {
 			const self = this;
+			await spartan._deserialize
 			if (spartan.getRentalProviders().length === 0) {
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
