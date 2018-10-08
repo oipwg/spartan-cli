@@ -8,9 +8,8 @@ export default function(vorpal, options){
 	.action(async function(args) {
 		let rental_providers = spartan.getRentalProviders()
 
-		if (rental_providers.length === 0){
-			this.log(vorpal.chalk.green("No Rental Providers have been added!"))
-			return
+		if (rental_providers.length === 0) {
+			return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 		}
 
 		let provider_choices = []

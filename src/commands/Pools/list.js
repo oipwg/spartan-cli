@@ -13,8 +13,7 @@ export default function(vorpal, options){
 
 			await spartan._deserialize;
 			if (spartan.getRentalProviders().length === 0) {
-				self.log(vorpal.chalk.red(`No rental providers found! Add one by typing: rentalprovider add`));
-				return
+				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
 
 			let _pools;
