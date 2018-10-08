@@ -13,7 +13,7 @@ export default function(vorpal, options){
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
 
-			self.log('Create pool');
+			self.log(vorpal.chalk.yellow(`Enter pool data:`));
 			let poolOpts = {}
 
 			let name = await self.prompt({
@@ -76,9 +76,9 @@ export default function(vorpal, options){
 			let poolsCreate = await spartan.createPool(poolOpts);
 
 			if ((spartan.returnPools().length === totalPools + 1) && (poolsCreate.length === spartan.getRentalProviders().length)) {
-				self.log(vorpal.chalk.green(`Pool successfully created!`))
+				self.log(`Pool successfully created!`)
 			} else {
-				self.log(vorpal.chalk.red(`Pool unsuccessfully created. Type 'pool list' to see if something went wrong`))
+				self.log(vorpal.chalk.red(`Pool unsuccessfully created. Consider running 'pool list' to see if something went wrong`))
 			}
 
 			spartan.serialize()
