@@ -1,6 +1,9 @@
 const timestring = require('timestring')
 
 export function convertHumanTimeToSeconds(time) {
+	if (time.indexOf('h') === -1 || time.indexOf('H') === 1)
+		time = `${time}h`
+
     return timestring(time)
 }
 
@@ -24,15 +27,21 @@ export function convertHumanHashrateToMH(human_hashrate){
 		}
 	]
 
+
 	let number_value = parseFloat(human_hashrate.match(/[0-9]+/)[0])
 	let symbol_value = human_hashrate.match(/[a-zA-Z]+/)[0]
 
+	let match = false
 	for (let symbol of UNIT_SYMBOLS){
 		if (symbol.symbols.indexOf(symbol_value) !== -1){
+			match = true
 			return number_value * symbol.value
 		}
 	}
-}
+	if (!match) {
+		convertHumanHashrateToMH(`${human_hashrate}mh`)
+	}
+ }
 
 export const fmtPool = (pool, vorpal) => {
 	return vorpal.chalk.white(`${vorpal.chalk.blue(pool.type)} ${vorpal.chalk.green(pool.host + ':' + pool.port)} ${vorpal.chalk.yellow(pool.name || null)} ${pool.user}`)
