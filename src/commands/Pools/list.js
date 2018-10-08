@@ -114,16 +114,15 @@ export default function(vorpal, options){
 								throw new Error(`Failed to update pool: ${err}`)
 							}
 						}
+					} else {
+						let updatePrompt = await self.prompt({
+							type: 'input',
+							message: vorpal.chalk.yellow(` ${param} `),
+							name: 'input',
+							default: poolV2[param]
+						})
+						poolV2[param] = updatePrompt.input
 					}
-
-					let updatePrompt = await self.prompt({
-						type: 'input',
-						message: vorpal.chalk.yellow(` ${param} `),
-						name: 'input',
-						default: poolV2[param]
-					})
-
-					poolV2[param] = updatePrompt.input
 				}
 
 				spartan.serialize()
