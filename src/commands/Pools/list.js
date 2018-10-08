@@ -1,7 +1,6 @@
-import {serPool, fmtPool} from "../../utils";
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
 import {AddPoolToProfile} from "./PoolFunctions/AddPoolToProfile";
-import {SetPoolPriority} from "./PoolFunctions/SetPoolPriority";
+import {ListPools} from "./PoolFunctions/ListPools";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
@@ -19,41 +18,9 @@ export default function(vorpal, options){
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
 
-			let _pools;
-			try {
-				_pools = await spartan.getPools()
-			} catch (err) {
-				self.log(vorpal.chalk.red("Failed to get pools from MRR API: ", err))
+			let _pool = await ListPools(self, vorpal, spartan)
+			if (_pool === exit)
 				return
-			}
-
-			let fmtPoolArray = [];
-			for (let pool of _pools) {
-				fmtPoolArray.push(fmtPool(serPool(pool), vorpal))
-			}
-
-			let promptPools = await self.prompt({
-				type: 'list',
-				message: 'Select a pool to manage:',
-				name: 'choice',
-				choices: [...fmtPoolArray, exit]
-			});
-
-			let chosenPool = promptPools.choice;
-			if (chosenPool === exit)
-				return
-
-			let poolObj = {};
-			for (let pool of _pools) {
-				poolObj[fmtPool(serPool(pool), vorpal)] = pool.id
-			}
-			let poolid = poolObj[chosenPool];
-			let _pool;
-			for (let pool of _pools) {
-				if (pool.id === poolid) {
-					_pool = pool
-				}
-			}
 
 			let promptPoolCommands = await self.prompt({
 				type: 'list',
