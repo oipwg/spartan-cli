@@ -1,6 +1,7 @@
 import {Prompt_CreateMRRPool, Prompt_CreatePoolProfile} from "../RentalProvider/add/promptFunctions";
 import {fmtPool, serPool} from "../../utils";
 import {UpdatePool} from "./PoolFunctions/UpdatePool";
+import {SetPoolPriority} from "./PoolFunctions/SetPoolPriority";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
@@ -219,25 +220,7 @@ export default function(vorpal, options){
 
 					//on _pool
 					if (command === 'Set Priority') {
-						let priorityPrompt = await self.prompt({
-							type: 'list',
-							name: 'option',
-							message: 'Select an option: ',
-							choices: ['0', '1', '2', '3', '4']
-						})
-						let priority = priorityPrompt.option
-
-						let poolAPIObj = {profileID, poolid: _pool.id, algo: _pool.type, name: _pool.name, priority}
-
-						let res;
-						try {
-							res = await _prov.updatePoolOnProfile(poolAPIObj)
-						} catch (err) {
-							throw new Error(`Failed to set priority on pool: ${err}`)
-						}
-						if (res.success)
-							self.log(vorpal.chalk.green(`Updated pool priority!`))
-						return
+						await SetPoolPriority(self, vorpal, spartan, profileID, _pool, _prov)
 					}
 
 					if (command === 'Delete') {
@@ -259,9 +242,9 @@ export default function(vorpal, options){
 								throw new Error(`Failed to delete pool`)
 							}
 							if (res.success)
-								self.log(vorpal.chalk.green(JSON.stringify(res, null, 4)))
+								self.log(vorpal.chalk.red('Deleted.'))
 							if (!res.success)
-								self.log(vorpal.chalk.red(JSON.stringify(res, null, 4)))
+								self.log(vorpal.chalk.red(`Failed to delete pool: `, JSON.stringify(res, null, 4)))
 
 						}
 					}
