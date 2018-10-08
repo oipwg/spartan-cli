@@ -1,5 +1,6 @@
 import {Prompt_CreateMRRPool, Prompt_CreatePoolProfile} from "../RentalProvider/add/promptFunctions";
 import {fmtPool, serPool} from "../../utils";
+import {UpdatePool} from "./PoolFunctions/UpdatePool";
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot
@@ -118,7 +119,6 @@ export default function(vorpal, options){
 				}
 
 				if (command === 'List Pools') {
-					//ToDo: sort by priority
 					if (!_profile.pools || (_profile.pools && _profile.pools.length === 0)) {
 						let commandOpt = await self.prompt({
 							type: 'confirm',
@@ -130,6 +130,7 @@ export default function(vorpal, options){
 						if (!confirm)
 							return
 						if (confirm) {
+							//ToDo: Refactor into __CREATEPOOL__ func
 							let poolOptions = await Prompt_CreateMRRPool(self, vorpal, spartan)
 
 							let res;
@@ -166,7 +167,7 @@ export default function(vorpal, options){
 						throw new Error('Failed to get pools: ${err}')
 					}
 
-					//add name and id to pool that was returned on profile
+					//add name, id, and priority to pool that was returned on profile
 					let newPoolArray = []
 					for (let pool of profilePools) {
 						for (let p of allPools) {
@@ -206,9 +207,15 @@ export default function(vorpal, options){
 						type: 'list',
 						name: 'option',
 						message: vorpal.chalk.yellow('Select a command: '),
-						choices: ['Set Priority', 'Delete', 'exit']
+						choices: ['Update', 'Set Priority', 'Delete', 'exit']
 					})
 					let command = poolCommand.option;
+					if (command === 'exit')
+						return
+
+					if (command === 'Update') {
+						return await UpdatePool(self, vorpal, spartan, _pool)
+					}
 
 					//on _pool
 					if (command === 'Set Priority') {
@@ -258,9 +265,6 @@ export default function(vorpal, options){
 
 						}
 					}
-
-					if (command === 'exit')
-						return
 				}
 
 				if (command === 'Add Pool') {
