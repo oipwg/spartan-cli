@@ -108,7 +108,7 @@ export default function(vorpal, options){
 				let profileCommand = await self.prompt({
 					type: 'list',
 					name: 'option',
-					message: vorpal.chalk.yellow('Select a command: '),
+					message: vorpal.chalk.yellow('Select a command:'),
 					choices: ['Set to Active', 'List Pools', 'Add Pool', 'Create Pool', 'Delete', exit]
 				})
 				let command = profileCommand.option
@@ -126,16 +126,15 @@ export default function(vorpal, options){
 				if (command === 'List Pools') {
 					if (!_profile.pools || (_profile.pools && _profile.pools.length === 0)) {
 						let commandOpt = await self.prompt({
-							type: 'confirm',
-							message: vorpal.chalk.yellow(`No pools found. Would you like to create one?`),
-							default: true,
-							name: 'confirm'
+							type: 'list',
+							message: vorpal.chalk.yellow(`No pools found. Create or add one.`),
+							name: 'option',
+							choices: ['Create', 'Add', exit]
 						})
-						let confirm = commandOpt.confirm
-						if (!confirm)
+						let command = commandOpt.option
+						if (command === exit)
 							return
-						if (confirm) {
-							//ToDo: Refactor into __CREATEPOOL__ func
+						if (command === 'Create') {
 							let poolOptions = await Prompt_CreateMRRPool(self, vorpal, spartan)
 
 							let res;
@@ -144,7 +143,7 @@ export default function(vorpal, options){
 							} catch (err) {
 								throw new Error(`Failed to create a pool: ${err}`)
 							}
-							self.log(vorpal.chalk.blue('Created Pool!'))
+							self.log(vorpal.chalk.yellow('Pool Created'))
 
 							if (res) {
 								let newPoolObj = {profileID, poolid: res.mrrID, priority: 0, algo: res.type, name: res.name}
@@ -160,6 +159,10 @@ export default function(vorpal, options){
 								if (!addPoolToProfile.success)
 									self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
 							}
+						}
+
+						if (command === 'Add') {
+
 						}
 						return
 					}
