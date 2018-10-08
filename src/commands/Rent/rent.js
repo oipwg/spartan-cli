@@ -1,8 +1,4 @@
 import {manualRentPrompt} from "./manualRent";
-import {
-	convertHumanHashrateToMH,
-	convertHumanTimeToSeconds
-} from '../../utils'
 
 export default function(vorpal, options){
 	let spartan = options.SpartanBot

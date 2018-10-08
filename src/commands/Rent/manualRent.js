@@ -3,7 +3,6 @@ import {
 	convertHumanTimeToSeconds
 } from '../../utils'
 
-
 export const manualRentPrompt = async (self, vorpal, spartan) => {
 	const questions = [
 		{
