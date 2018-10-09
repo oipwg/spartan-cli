@@ -157,7 +157,7 @@ export default function(vorpal, options){
 									throw new Error(`Failed to add pool to profile: ${err}`)
 								}
 								if (addPoolToProfile.success)
-									self.log(vorpal.chalk.green(JSON.stringify(addPoolToProfile, null, 4)))
+									self.log(`Pool Created`)
 								if (!addPoolToProfile.success)
 									self.log(vorpal.chalk.red(JSON.stringify(addPoolToProfile, null, 4)))
 							}
@@ -177,25 +177,28 @@ export default function(vorpal, options){
 						}
 						return
 					}
+
 					let profilePools = _profile.pools
 
 					let allPools;
 					try {
 						allPools = await _prov.getPools()
 					} catch (err) {
-						throw new Error('Failed to get pools: ${err}')
+						throw new Error(`Failed to get pools: ${err}`)
 					}
 
-					//add name, id, and priority to pool that was returned on profile
+					// add name, id, and priority to pool that was returned on profile
 					let newPoolArray = []
 					for (let pool of profilePools) {
 						for (let p of allPools) {
 							if (pool.host === p.host && pool.user === p.user && pool.port === p.port && pool.pass === p.pass) {
-								newPoolArray.push({...pool, name: p.name, id: p.id, priority: pool.priority})
+								if (newPoolArray.length < profilePools.length) {
+									newPoolArray.push({...pool, id: p.id, priority: pool.priority})
+								}
 							}
 						}
 					}
-
+				
 					let poolArray = []
 					let poolObject = {}
 					for (let pool of newPoolArray) {
@@ -203,6 +206,7 @@ export default function(vorpal, options){
 						poolArray.push(formattedPool)
 						poolObject[formattedPool] = pool.id
 					}
+
 					self.log(vorpal.chalk.yellow(`These are the pools on this profile`))
 					let promptPools = await self.prompt({
 						type: 'list',

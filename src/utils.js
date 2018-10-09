@@ -44,7 +44,7 @@ export function convertHumanHashrateToMH(human_hashrate){
  }
 
 export const fmtPool = (pool, vorpal) => {
-	return vorpal.chalk.white(`${vorpal.chalk.blue(pool.type)} ${vorpal.chalk.green(pool.host + ':' + pool.port)} ${vorpal.chalk.yellow(pool.name || null)} ${pool.user}`)
+	return vorpal.chalk.white(`${vorpal.chalk.blue(pool.type)} ${vorpal.chalk.green(pool.host + ':' + pool.port)} ${pool.name ? vorpal.chalk.yellow(pool.name + ' ') : ''}${pool.user}`)
 };
 
 export const serPool = (pool) => {
