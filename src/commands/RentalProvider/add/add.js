@@ -149,7 +149,7 @@ export default function(vorpal, options){
 								let NiceHashPool = await Prompt_NiceHashCreatePool(self, vorpal, spartan);
 								await spartan.createPool(NiceHashPool);
 								setup_success.provider.setActivePool(NiceHashPool.id);
-								self.log(vorpal.chalk.blue(`Pool added!`))
+								self.log(`Pool Added`)
 							}
 						} else {
 							let fmtPoolArray = [];
@@ -175,7 +175,7 @@ export default function(vorpal, options){
 						//Prompt create Nice Hash pool
 						let NiceHashPool = await Prompt_NiceHashCreatePool(self, vorpal, spartan);
 						await spartan.createPool(NiceHashPool);
-						self.log(vorpal.chalk.blue(`Pool added!`))
+						self.log(`Pool Created`)
 					}
 				}
 				spartan.serialize()

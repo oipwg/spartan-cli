@@ -189,16 +189,22 @@ export default function(vorpal, options){
 
 					// add name, id, and priority to pool that was returned on profile
 					let newPoolArray = []
+					let priorities = []
 					for (let pool of profilePools) {
 						for (let p of allPools) {
 							if (pool.host === p.host && pool.user === p.user && pool.port === p.port && pool.pass === p.pass) {
 								if (newPoolArray.length < profilePools.length) {
-									newPoolArray.push({...pool, id: p.id, priority: pool.priority})
+									if (priorities.includes(pool.priority)) {
+										continue;
+									} else {
+										priorities.push(pool.priority)
+										newPoolArray.push({...pool, id: p.id, priority: pool.priority})
+									}
 								}
 							}
 						}
 					}
-				
+
 					let poolArray = []
 					let poolObject = {}
 					for (let pool of newPoolArray) {
