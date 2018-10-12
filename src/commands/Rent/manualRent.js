@@ -4,59 +4,96 @@ import {
 } from '../../utils'
 
 export const manualRentPrompt = async (self, vorpal, spartan) => {
+	const exit = vorpal.chalk.red('exit')
 	const questions = [
 		{
 			type: 'input',
 			name: 'hashrate',
-			default: '5MH',
-			message: vorpal.chalk.yellow('How much Hashrate would you like to rent (i.e. 250MH, 1GH)? ')
+			default: '5000',
+			message: vorpal.chalk.yellow('How much Hashrate would you like to rent (MH)? ')
 		},
 		{
 			type: 'input',
 			name: 'duration',
-			default: '6h',
-			message: vorpal.chalk.yellow('How long would you like to rent your miner? ')
+			default: '3',
+			message: vorpal.chalk.yellow('How long would you like to rent your miner? (hours) ')
 		}
 	];
 
 	let answers = await self.prompt(questions);
 
-	let converted_hashrate = convertHumanHashrateToMH(answers.hashrate);
-	let converted_duration = convertHumanTimeToSeconds(answers.duration);
+	let hashrate = answers.hashrate
+	let duration = answers.duration
 
 	self.log(vorpal.chalk.cyan("Searching for miners..."))
 
-	let rental_aborted = false
+	let confirm = true
 
-	let rent_manual = await spartan.manualRental(converted_hashrate, converted_duration, async (prepurchase_info) => {
-		self.log(prepurchase_info)
-		if (JSON.stringify(prepurchase_info.status.status === 'warning' && prepurchase_info.status.type === "LOW_BALANCE")){
-			self.log(vorpal.chalk.red(prepurchase_info.status.message))
-		} else if (prepurchase_info.status.status === 'normal'){
-			self.log(vorpal.chalk.cyan("Enough funds in wallet for purchase"))
-		}
-		let confirm_purchase = await self.prompt({
-			type: 'confirm',
-			name: 'confirm',
-			default: false,
-			message: vorpal.chalk.yellow('Do you want to rent ' + prepurchase_info.total_rigs + ' miner(s) (' + (prepurchase_info.hashrate_to_rent/1000).toFixed(2) + ' GH) for $' + prepurchase_info.cost_to_rent + '?')
-		})
-		if (confirm_purchase.confirm){
-			self.log(vorpal.chalk.cyan("Renting miners..."))
+	let rentals = await spartan.manualRental(hashrate, duration, async (preprocess, options) => {
+		// self.log(preprocess, options)
+		let badges = preprocess.badges
+		let badgeArray = []
+		let badgesObject = {}
+		if (Array.isArray(badges)) {
+			for (let badge of badges) {
+				badgeArray.push(badge)
+				badgesObject[badge.uid] = badge
+			}
 		} else {
-			rental_aborted = true
-			self.log(vorpal.chalk.red("Rental was aborted"))
+			badgeArray.push(badges)
+			badgesObject[badges.uid] = badges
 		}
 
-		return confirm_purchase.confirm
+		const fmtPool = (badge, vorpal) => {
+			return `Rent: ${vorpal.chalk.red(badge.market)}: ${vorpal.chalk.green(`${(badge.amount).toFixed(6)}`)}BTC ${vorpal.chalk.white('@')} ${vorpal.chalk.yellow(badge.limit*1000*1000)}MH ${vorpal.chalk.white('for')} ${vorpal.chalk.yellow(`${badge.duration}`)} hours`
+		};
+		let fmtBadges = []
+
+		let fmtObject = {}
+		for (let badge of badges) {
+			fmtBadges.push(fmtPool(badge, vorpal))
+			fmtObject[badge.uid] = fmtPool(badge, vorpal)
+		}
+
+
+		let rentPrompt = await self.prompt({
+			type: 'list',
+			message: vorpal.chalk.yellow('Select from the following: '),
+			name: 'options',
+			choices: [...fmtBadges, exit]
+		})
+		let selection = rentPrompt.options
+
+		let badgeUID;
+		let _badge
+
+
+		if (selection === exit) {
+			confirm = false
+		} else {
+			for (let uid in fmtObject) {
+				if (fmtObject[uid] === selection)
+					badgeUID = uid
+			}
+
+			for (let uid in badgesObject) {
+				if (uid === badgeUID)
+					_badge = badgesObject[uid]
+			}
+		}
+
+		return {
+			confirm,
+			badges: _badge
+		}
 	})
 
-	if (rent_manual.success && !rental_aborted){
-		self.log(vorpal.chalk.green(`Successfully rented ${rent_manual.total_rigs_rented} miner(s) (${(rent_manual.total_hashrate/1000).toFixed(2)} GH) for $${rent_manual.total_cost}!`))
-
+	if (!confirm) {
+		self.log(vorpal.chalk.red('Rental cancelled'))
 	} else {
-		if (!rental_aborted)
-			return self.log(vorpal.chalk.red("Unable to rent Miners! " + JSON.stringify(rent_manual)))
+		for (let rental of rentals) {
+			self.log(`Rental Success: ` + vorpal.chalk.yellow(`${rental.market}. BTC ${vorpal.chalk.green(`${rental.amount}`)}. Hash ${vorpal.chalk.red(`${rental.limit*1000000}`)} @ ${rental.price}BTC/TH/HR`))
+		}
 	}
 }
 
