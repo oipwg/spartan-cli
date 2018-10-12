@@ -18,6 +18,7 @@ export default function(vorpal, options){
 				return this.log(vorpal.chalk.yellow("No Rental Providers were found! Please run '") + vorpal.chalk.cyan("rentalprovider add") + vorpal.chalk.yellow("' to add your API keys."))
 			}
 
+			//ToDo: (bug) lists the same pool twice
 			let _pool = await ListPools(self, vorpal, spartan)
 			if (_pool === exit)
 				return
