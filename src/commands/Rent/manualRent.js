@@ -56,24 +56,33 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		})
 		let selection = rentPrompt.options
 
+		let confirm = true
 		let badgeUID;
 		let _badge
 
-		let confirm = true
-		if (selection === exit) {
-			confirm = false
+		if (selection !== exit) {
+			let confirmationPrompt = await self.prompt({
+				type: 'confirm',
+				message: vorpal.chalk.green('Are you sure you sure?'),
+				default: false,
+				name: 'confirm'
+			})
+			let confirmation = confirmationPrompt.confirm
+			if (!confirmation) {
+				confirm = false
+			} else {
+				for (let uid in fmtObject) {
+					if (fmtObject[uid] === selection)
+						badgeUID = uid
+				}
+				for (let uid in badgesObject) {
+					if (uid === badgeUID)
+						_badge = badgesObject[uid]
+				}
+			}
 		} else {
-			for (let uid in fmtObject) {
-				if (fmtObject[uid] === selection)
-					badgeUID = uid
-			}
-
-			for (let uid in badgesObject) {
-				if (uid === badgeUID)
-					_badge = badgesObject[uid]
-			}
+			confirm = false
 		}
-
 		return {
 			confirm,
 			badges: _badge
