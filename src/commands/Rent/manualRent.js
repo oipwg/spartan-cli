@@ -1,8 +1,3 @@
-import {
-	convertHumanHashrateToMH,
-	convertHumanTimeToSeconds
-} from '../../utils'
-
 export const manualRentPrompt = async (self, vorpal, spartan) => {
 	const exit = vorpal.chalk.red('exit')
 	const questions = [
@@ -27,10 +22,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 
 	self.log(vorpal.chalk.cyan("Searching for miners..."))
 
-	let confirm = true
-
 	let rentals = await spartan.manualRental(hashrate, duration, async (preprocess, options) => {
-		// self.log(preprocess, options)
 		let badges = preprocess.badges
 		let badgeArray = []
 		let badgesObject = {}
@@ -67,7 +59,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		let badgeUID;
 		let _badge
 
-
+		let confirm = true
 		if (selection === exit) {
 			confirm = false
 		} else {
@@ -88,8 +80,8 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		}
 	})
 
-	if (!confirm) {
-		self.log(vorpal.chalk.red('Rental cancelled'))
+	if (!rentals.success) {
+		self.log(vorpal.chalk.red(`${rentals.message}`))
 	} else {
 		for (let rental of rentals) {
 			self.log(`Rental Success: ` + vorpal.chalk.yellow(`${rental.market}. BTC ${vorpal.chalk.green(`${rental.amount}`)}. Hash ${vorpal.chalk.red(`${rental.limit*1000000}`)} @ ${rental.price}BTC/TH/HR`))
