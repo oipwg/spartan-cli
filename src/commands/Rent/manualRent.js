@@ -107,6 +107,11 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			fmtObject[badge.id] = fmtPool(badge, vorpal)
 		}
 
+		self.log('\n')
+		for (let status in statuses) {
+			if (statuses[status])
+				self.log(statusMessages[status])
+		}
 
 		let rentPrompt = await self.prompt({
 			type: 'list',
