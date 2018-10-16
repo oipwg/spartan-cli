@@ -28,8 +28,32 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 	self.log(vorpal.chalk.cyan("Searching for miners..."))
 
 	let rentals = await spartan.manualRental(hashrate, duration, async (preprocess, options) => {
-		let badges = preprocess.badges
-		let badgeArray = []
+		const badges = preprocess.badges
+		if (badges.length === 0) {
+			return {confirm: false, badges: undefined}
+		}
+
+		const statusBadges = {
+			normal: vorpal.chalk.bgGreen.white('*NORMAL'),
+			cutoff: vorpal.chalk.bgYellow.white('*CUTOFF'),
+			extension: vorpal.chalk.bgBlue.white('*EXTENSION'),
+			low_balance: vorpal.chalk.bgRed.white('*LOW_BALANCE')
+		}
+
+		const statusMessages = {
+			normal: vorpal.chalk.bgGreen(`*NORMAL - Normal status. Provider found approx. what user requested.`),
+			extension: vorpal.chalk.bgBlue(`*EXTENSION - Warning status. Minimum rental requirements apply. Duration will be extended.`),
+			cutoff: vorpal.chalk.bgYellow(`*CUTOFF - Warning status. Attempt to bypass minimum rental requirements by cancelling at requested time. Application must remain running to cancel.`),
+			low_balance: vorpal.chalk.bgRed(`*LOW_BALANCE - Warning status. Provider has low balance, cannot rent for desired duration/limit.`),
+		}
+
+		let statuses = {
+			normal: false,
+			extension: false,
+			cutoff: false,
+			low_balance: false
+		}
+
 		let badgesObject = {}
 		if (Array.isArray(badges)) {
 			for (let badge of badges) {
