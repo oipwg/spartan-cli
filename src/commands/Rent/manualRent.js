@@ -56,15 +56,33 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 
 		let badgesCopy = badges.map(obj => ({...obj}))
 
+		//apply status text to badges
 		let badgesObject = {}
-		if (Array.isArray(badges)) {
-			for (let badge of badges) {
-				badgeArray.push(badge)
-				badgesObject[badge.uid] = badge
+		for (let badge of badgesCopy) {
+			let statusText;
+			if (badge.status.status === NORMAL) {
+				statuses.normal = true
+				statusText = statusBadges.normal
 			}
-		} else {
-			badgeArray.push(badges)
-			badgesObject[badges.uid] = badges
+			if (badge.status.status === WARNING) {
+				if (badge.status.type === CUTOFF) {
+					if (badge.cutoff) {
+						badge.amount = badge.status.cutoffCost
+						badge.duration = badge.status.desiredDuration
+						statuses.cutoff = true
+						statusText = statusBadges.cutoff
+					} else {
+						statuses.extension = true
+						statusText = statusBadges.extension
+					}
+				}
+				if (badge.status.type === LOW_BALANCE) {
+					statuses.low_balance = true
+					statusText = statusBadges.low_balance
+				}
+			}
+			badge.statusText = statusText
+			badgesObject[badge.id] = badge
 		}
 
 		const fmtPool = (badge, vorpal) => {
