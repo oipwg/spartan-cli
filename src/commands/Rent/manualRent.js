@@ -30,7 +30,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 	let rentals = await spartan.manualRental(hashrate, duration, async (preprocess, options) => {
 		const badges = preprocess.badges
 		if (badges.length === 0) {
-			return {confirm: false, badges: undefined}
+			return {confirm: false, message: 'No rental options found'}
 		}
 
 		const statusBadges = {
@@ -121,12 +121,11 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		})
 		let selection = rentPrompt.options
 
-		let confirm = true
 		let badgeID;
 		let _badge
 
 		if (selection === exit) {
-			confirm = false
+			return {confirm: false, message: "Rent cancelled"}
 		} else {
 			let confirmationPrompt = await self.prompt({
 				type: 'confirm',
@@ -136,7 +135,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			})
 			let confirmation = confirmationPrompt.confirm
 			if (!confirmation) {
-				confirm = false
+				return {confirm: false, message: "Rent cancelled"}
 			} else {
 				for (let id in fmtObject) {
 					if (fmtObject[id] === selection)
@@ -148,9 +147,9 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 				}
 			}
 		}
-		// console.log(_badge)
+
 		return {
-			confirm,
+			confirm: true,
 			badges: _badge
 		}
 	})
