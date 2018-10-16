@@ -86,7 +86,18 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		}
 
 		const fmtPool = (badge, vorpal) => {
-			return `Rent: ${vorpal.chalk.red(badge.market)}: ${vorpal.chalk.green(`${(badge.amount).toFixed(6)}`)}BTC ${vorpal.chalk.white('@')} ${vorpal.chalk.yellow(badge.limit*1000*1000)}MH ${vorpal.chalk.white('for')} ${vorpal.chalk.yellow(`${badge.duration}`)} hours`
+			return `${vorpal.chalk.white.bold(
+				`${vorpal.chalk.red('Market')}: ` + 
+				`${badge.market} ${vorpal.chalk.blue('Price')}: ` +
+				`${badge.price} BTC/TH/DAY ` +
+				`${vorpal.chalk.green(`Amount:`)} `+
+				`${(badge.amount).toFixed(6)} BTC ` +
+				`${vorpal.chalk.yellow('Hash Limit:')} ` +
+				`${badge.limit*1000*1000} MH ` +
+				`${vorpal.chalk.yellow(`Duration`)} ` +
+				`${badge.duration} hours ` +
+				`${badge.statusText}`
+			)}`
 		};
 		let fmtBadges = []
 
