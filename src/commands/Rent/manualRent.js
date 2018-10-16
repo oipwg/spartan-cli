@@ -54,6 +54,8 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			low_balance: false
 		}
 
+		let badgesCopy = badges.map(obj => ({...obj}))
+
 		let badgesObject = {}
 		if (Array.isArray(badges)) {
 			for (let badge of badges) {
