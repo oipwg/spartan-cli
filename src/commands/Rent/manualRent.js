@@ -102,9 +102,9 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		let fmtBadges = []
 
 		let fmtObject = {}
-		for (let badge of badges) {
+		for (let badge of badgesCopy) {
 			fmtBadges.push(fmtPool(badge, vorpal))
-			fmtObject[badge.uid] = fmtPool(badge, vorpal)
+			fmtObject[badge.id] = fmtPool(badge, vorpal)
 		}
 
 
@@ -134,15 +134,17 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 				for (let uid in fmtObject) {
 					if (fmtObject[uid] === selection)
 						badgeUID = uid
+				for (let id in fmtObject) {
+					if (fmtObject[id] === selection)
+						badgeID = id
 				}
-				for (let uid in badgesObject) {
-					if (uid === badgeUID)
-						_badge = badgesObject[uid]
+				for (let badge of badges) {
+					if (badge.id === badgeID)
+						_badge = badge
 				}
 			}
-		} else {
-			confirm = false
 		}
+		// console.log(_badge)
 		return {
 			confirm,
 			badges: _badge
