@@ -154,14 +154,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			badges: _badge
 		}
 	})
-
-	if (!rentals.success) {
-		self.log(vorpal.chalk.red(`${rentals.message}`))
-	} else {
-		for (let rental of rentals) {
-			self.log(`Rental Success: ` + vorpal.chalk.yellow(`${rental.market}. BTC ${vorpal.chalk.green(`${rental.amount}`)}. Hash ${vorpal.chalk.red(`${rental.limit*1000000}`)} @ ${rental.price}BTC/TH/HR`))
-		}
-	}
+	self.log(vorpal.chalk.yellow(JSON.stringify(rentals, null, 4)))
 }
 
 
