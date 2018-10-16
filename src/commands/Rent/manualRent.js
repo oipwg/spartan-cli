@@ -1,3 +1,8 @@
+const NORMAL = "NORMAL"
+const WARNING = "WARNING"
+const CUTOFF = "CUTOFF"
+const LOW_BALANCE = "LOW_BALANCE"
+
 export const manualRentPrompt = async (self, vorpal, spartan) => {
 	const exit = vorpal.chalk.red('exit')
 	const questions = [
