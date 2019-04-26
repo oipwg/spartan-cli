@@ -1,8 +1,7 @@
-import list from './list'
-import modify from './modify'
+import settings from './settings'
 
 // An array of all the supported commands
-const COMMANDS = [ list , modify ]
+const COMMANDS = [ settings]
 
 export default function(vorpal, options){
 	// For each Command in the COMMANDS array

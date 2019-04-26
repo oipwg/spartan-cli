@@ -3,7 +3,7 @@ const WARNING = "WARNING"
 const CUTOFF = "CUTOFF"
 const LOW_BALANCE = "LOW_BALANCE"
 
-export const manualRentPrompt = async (self, vorpal, spartan) => {
+export const manualRent = async (self, vorpal, spartan) => {
 	const exit = vorpal.chalk.red('exit')
 	const questions = [
 		{
@@ -26,11 +26,17 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 	let duration = answers.duration
 
 	self.log(vorpal.chalk.cyan("Searching for miners..."))
+	// console.log(vorpal.ui._activePrompt)
 
-	let rentals = await spartan.manualRental(hashrate, duration, async (preprocess, options) => {
+	 spartan.manualRent(hashrate, duration, async (preprocess, options) => {
+		//cancel any ongoing processes so that we can display preprocess prompts
+		// console.log('midPrompt: ', vorpal.ui._midPrompt)
+		vorpal.ui.cancel()
+
+		// self.log('preprocess: ', preprocess)
 		const badges = preprocess.badges
 		if (badges.length === 0) {
-			return {confirm: false, message: 'No rental options found'}
+			return {confirm: false, message: 'No rental options found with current balance and desired options.'}
 		}
 
 		const statusBadges = {
@@ -54,6 +60,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			low_balance: false
 		}
 
+		//make a 2layer deep copy of the badges so that we can display different info for the cutoffs
 		let badgesCopy = badges.map(obj => ({...obj}))
 
 		//apply status text to badges
@@ -87,7 +94,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 
 		const fmtPool = (badge, vorpal) => {
 			return `${vorpal.chalk.white.bold(
-				`${vorpal.chalk.red('Market')}: ` + 
+				`${vorpal.chalk.red('Market')}: ` +
 				`${badge.market} ${vorpal.chalk.blue('Price')}: ` +
 				`${badge.price} BTC/TH/DAY ` +
 				`${vorpal.chalk.green(`Amount:`)} `+
@@ -107,7 +114,6 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 			fmtObject[badge.id] = fmtPool(badge, vorpal)
 		}
 
-		self.log('\n')
 		for (let status in statuses) {
 			if (statuses[status])
 				self.log(statusMessages[status])
@@ -129,7 +135,7 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 		} else {
 			let confirmationPrompt = await self.prompt({
 				type: 'confirm',
-				message: vorpal.chalk.green('Are you sure you sure?'),
+				message: vorpal.chalk.green('Are you sure?'),
 				default: false,
 				name: 'confirm'
 			})
@@ -147,13 +153,13 @@ export const manualRentPrompt = async (self, vorpal, spartan) => {
 				}
 			}
 		}
-
+		self.log(vorpal.chalk.yellow('Renting...'))
+		// self.log(vorpal.ui._activePrompt, vorpal.ui._midPrompt)
 		return {
 			confirm: true,
 			badges: _badge
 		}
 	})
-	self.log(vorpal.chalk.yellow(JSON.stringify(rentals, null, 4)))
 }
 
 

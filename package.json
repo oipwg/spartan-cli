@@ -5,8 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "dotenv": "^6.0.0",
-    "oip-account": "git+https://github.com/oipwg/oip-account.git",
-    "spartanbot": "^0.8.6",
+    "spartanbot": "^0.8.15",
     "timestring": "^5.0.1",
     "uid": "0.0.2",
     "vorpal": "^1.12.0"
@@ -28,7 +27,7 @@
     "type": "git",
     "url": "git+https://github.com/oipwg/spartan-cli.git"
   },
-  "author": "Sky Ostler, Ryan Chacon, Anthony Howl",
+  "author": "Sky Ostler, Ryan Chacon",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/oipwg/spartan-cli/issues"

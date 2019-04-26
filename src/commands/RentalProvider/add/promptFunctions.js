@@ -1,11 +1,12 @@
 import uid from 'uid'
 
 export const Prompt_RentalProviders = async (self, vorpal, spartan) => {
+	const exit = vorpal.chalk.red(`exit`)
 	return await self.prompt({
 		type: 'list',
 		name: 'rental_provider',
 		message: vorpal.chalk.yellow('Which Rental Provider would you like to add?'),
-		choices: [...spartan.getSupportedRentalProviders(), 'Cancel']
+		choices: [...spartan.getSupportedRentalProviders(), exit]
 	});
 };
 
@@ -15,12 +16,12 @@ export const Prompt_MRRAPIKeys = async (self, vorpal) => {
 			type: "input",
 			name: "api_key",
 			message: vorpal.chalk.yellow("Please enter your API Key: "),
-			default: process.env.API_KEY
+			default: process.env.MRR_API_KEY
 		},{
 			type: "input",
 			name: "api_secret",
 			message: vorpal.chalk.yellow("Please enter your API Secret: "),
-			default: process.env.API_SECRET
+			default: process.env.MRR_API_SECRET
 		}
 	]);
 };
@@ -51,11 +52,12 @@ export const Prompt_OptionalName = async (self, vorpal) => {
 };
 
 export const Prompt_AddOrCreatePool = async (self, vorpal, provider) => {
+	const exit = vorpal.chalk.red(`exit`)
 	let message = provider.getInternalType() === "MiningRigRentals" ? (
 		vorpal.chalk.yellow("Select a pool profile to use or create a new one")
 	) : (vorpal.chalk.yellow("Add an existing pool or a create a new pool"))
-	let choices = provider.getInternalType() === "MiningRigRentals" ? (['select', 'create', 'exit']) : (
-		['add', 'create', 'exit']
+	let choices = provider.getInternalType() === "MiningRigRentals" ? (['select', 'create', exit]) : (
+		['add', 'create', exit]
 	)
 	return await self.prompt({
 		type: 'list',
@@ -66,11 +68,12 @@ export const Prompt_AddOrCreatePool = async (self, vorpal, provider) => {
 };
 
 export const Prompt_AddPool = async (self, vorpal, poolArray) => {
+	const exit = vorpal.chalk.red(`exit`)
 	return await self.prompt({
 		type: 'list',
 		name: 'option',
 		message: vorpal.chalk.yellow("Please choose from the following: "),
-		choices: [...poolArray, 'exit/return']
+		choices: [...poolArray, exit]
 	});
 }
 

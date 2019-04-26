@@ -13,6 +13,9 @@ import {
 } from "./promptFunctions";
 import {fmtPool, serPool} from "../../../utils";
 
+const MiningRigRentals = 'MiningRigRentals'
+const NiceHash = 'NiceHash'
+
 export default function(vorpal, options){
 	let spartan = options.SpartanBot;
 
@@ -22,18 +25,41 @@ export default function(vorpal, options){
 	.alias('rp add')
 	.action(async function(args) {
 		const self = this;
+		const exit = vorpal.chalk.red(`exit`)
+
+		let rentalProviders = spartan.getRentalProviders()
+		if (rentalProviders.length === 2)
+			return self.log(vorpal.chalk.red('Maximum number of providers reached.'))
 
 		let select_rental_providers = await Prompt_RentalProviders(self, vorpal, spartan);
 
 		let rental_provider_type = select_rental_providers.rental_provider;
-		if (rental_provider_type === 'cancel')
+		if (rental_provider_type === exit)
 			return;
 
+		//fn to check existence of a provider
+		const checkProviders = (provType) => {
+			for (let prov of rentalProviders) {
+				if (prov.getInternalType() === provType) {
+					return true
+				}
+			}
+		}
 		let api_answers;
-		if (rental_provider_type === "MiningRigRentals") {
+		if (rental_provider_type === MiningRigRentals) {
+			if (checkProviders(MiningRigRentals))
+				return self.log(vorpal.chalk.red(`MiningRigRentals account already exists. ${vorpal.chalk.cyan('Current Limit: 1.')} `))
+
 			api_answers = await Prompt_MRRAPIKeys(self, vorpal);
-		} else {
+			process.env.MRR_API_KEY = api_answers.api_key
+			process.env.MRR_API_SECRET = api_answers.api_secret
+		} else if (rental_provider_type === NiceHash) {
+			if (checkProviders(NiceHash))
+				return self.log(vorpal.chalk.red(`NiceHash account already exists. ${vorpal.chalk.cyan('Current Limit: 1.')} `))
+
 			api_answers = await Prompt_NiceHashAPIKeys(self, vorpal);
+			process.env.NICEHASH_API_KEY = api_answers.api_key
+			process.env.NICEHASH_API_ID = api_answers.api_id
 		}
 
 		let provider_name = await Prompt_OptionalName(self, vorpal);
